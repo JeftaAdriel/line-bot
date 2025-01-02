@@ -1,10 +1,19 @@
+import logging
 from fastapi import FastAPI, Request
+
+# Set up logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 app = FastAPI()
 
 
 @app.post("/webhook")
 async def webhook(request: Request):
+    # Parse the request body as JSON
     body = await request.json()
-    print("Received event:", body)
+
+    # Log the received event (incoming JSON)
+    logging.info("Received event: %s", body)
+
+    # Respond to acknowledge the request
     return {"status": "ok"}
