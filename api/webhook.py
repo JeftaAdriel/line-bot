@@ -17,7 +17,7 @@ async def webhook(request: Request):
 
     print("Received event: %s", body)
 
-    print(f"Raw Request: {request}")
+    print(f"Headers: {request.headers}")
 
     # Respond to acknowledge the request
     return {"status": "ok"}
