@@ -14,16 +14,20 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 load_dotenv()
 
 app = fastapi.FastAPI()
+print("sampai sini 1")
 
 
 @app.post("/webhook")
 async def webhook(request: fastapi.Request):
+    print("sampai sini 2")
     signature = request.headers.get("X-Line-Signature", "")
     r_body = await request.body()
     body_str = r_body.decode("utf-8")
     try:
+        print("sampai sini 3")
         if not verify_signature(body_str, signature):
             raise InvalidSignatureError("Invalid signature. signature=" + signature)
+        print("sampai sini 4")
     except InvalidSignatureError as exc:
         raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.") from exc
 
