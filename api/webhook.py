@@ -15,15 +15,18 @@ from utils.signature_validation import verify_signature
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 load_dotenv()
+print("Sudah di sini 1")
 configuration = Configuration(access_token=os.environ.get("LINE_CHANNEL_ACCESS_TOKEN"))
+print("Sudah di sini 2")
 handler = WebhookHandler(os.environ.get("LINE_CHANNEL_SECRET"))
-
+print("Sudah di sini 3")
 
 app = fastapi.FastAPI()
 
 
 @app.post("/webhook")
 async def webhook(request: fastapi.Request):
+    print(f"Received request: {request}")
     signature = request.headers.get("X-Line-Signature", "")
     r_body = await request.body()
     body_str = r_body.decode("utf-8")
