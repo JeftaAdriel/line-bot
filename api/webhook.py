@@ -21,13 +21,15 @@ async def webhook(request: fastapi.Request):
     try:
         signature = request.headers.get("X-Line-Signature", "")
         r_body = await request.body()
+        r_body_json = await request.json()
+        print(f"r_body_json: {r_body_json}")
         body_str = r_body.decode("utf-8")
 
         # signature validation
         if not verify_signature(body_str, signature):
             raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
 
-        events = r_body.get("events", [])
+        events = r_body_json.get("events", [])
 
         # processing text messages for now
         msg_events = [event for event in events if event.get("message", {}).get("type") == "text"]
