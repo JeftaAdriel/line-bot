@@ -11,8 +11,10 @@ from linebot.v3.messaging import Configuration
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+load_dotenv()
 
 app = FastAPI()
+configuration = Configuration(access_token=os.environ.get("LINE_CHANNEL_ACCESS_TOKEN"))
 
 
 @app.post("/webhook")
