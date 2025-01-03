@@ -36,6 +36,8 @@ async def webhook(request: fastapi.Request):
         for event in msg_events:
             reply_token = event.get("replyToken")
             print(f"reply_token: {reply_token}")
+            print(f"Access Token: {os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')[:10]}...")
+            print(f"Channel Secret: {os.environ.get('LINE_CHANNEL_SECRET')[:10]}...")
             send_message(reply_token)
 
         print(f"Received event: {r_body}")
