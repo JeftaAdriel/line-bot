@@ -54,4 +54,4 @@ async def webhook(request: fastapi.Request):
     # print(f"Is Valid: {is_valid}")
 
     # Respond to acknowledge the request
-    return {"status": "ok"}
+    return fastapi.responses.JSONResponse(content={"message": "OK"})
