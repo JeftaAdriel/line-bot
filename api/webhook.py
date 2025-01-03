@@ -18,16 +18,19 @@ print("sampai sini 1")
 
 @app.post("/webhook")
 async def webhook(request: fastapi.Request):
-    print("sampai sini 2")
-    signature = request.headers.get("X-Line-Signature", "")
-    r_body = await request.body()
-    body_str = r_body.decode("utf-8")
-    result = verify_signature(body_str, signature)
-    print(f"Result: {result}")
-    if not verify_signature(body_str, signature):
-        raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
-
-    print("Received event: %s", r_body)
-    print(f"Headers: {request.headers}")
-
-    return fastapi.responses.JSONResponse(content={"message": "OK"})
+    try:
+        print("sampai sini 2")
+        signature = request.headers.get("X-Line-Signature", "")
+        r_body = await request.body()
+        body_str = r_body.decode("utf-8")
+        result = verify_signature(body_str, signature)
+        print(f"Result: {result}")
+        if not result:
+            raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
+        print("Received event: %s", r_body)
+        print(f"Headers: {request.headers}")
+        return fastapi.responses.JSONResponse(content={"message": "OK"})
+    except Exception as e:
+        logging.error(f"Error processing webhook: {e}")
+        traceback.print_exc()
+        raise fastapi.HTTPException(status_code=500, detail="Internal server error")
