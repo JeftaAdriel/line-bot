@@ -1,10 +1,10 @@
 import os
-import fastapi
 import traceback
 import time
 import logging
 
 from dotenv import load_dotenv
+from fastapi import FastAPI, Request
 from linebot.v3 import WebhookHandler
 from linebot.v3.exceptions import InvalidSignatureError
 from linebot.v3.messaging import Configuration
@@ -21,12 +21,12 @@ print("Sudah di sini 2")
 handler = WebhookHandler(os.environ.get("LINE_CHANNEL_SECRET"))
 print("Sudah di sini 3")
 
-app = fastapi.FastAPI()
+app = FastAPI()
 print("Sudah di sini 4")
 
 
 @app.post("/webhook")
-async def webhook(request: fastapi.Request):
+async def webhook(request: Request):
     print(f"Received request: {request}")
     signature = request.headers.get("X-Line-Signature", "")
     r_body = await request.body()
