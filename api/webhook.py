@@ -5,7 +5,6 @@ import logging
 import fastapi
 
 from dotenv import load_dotenv
-from linebot.v3.exceptions import InvalidSignatureError
 
 from utils.signature_validation import verify_signature
 
@@ -23,6 +22,8 @@ async def webhook(request: fastapi.Request):
     signature = request.headers.get("X-Line-Signature", "")
     r_body = await request.body()
     body_str = r_body.decode("utf-8")
+    result = verify_signature(body_str, signature)
+    print(f"Result: {result}")
     if not verify_signature(body_str, signature):
         raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
 
