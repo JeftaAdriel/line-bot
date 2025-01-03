@@ -27,7 +27,7 @@ print("Sudah di sini 4")
 
 
 @app.post("/webhook")
-async def webhook(request: fastapi.Request):
+async def webhook(request):
     print(f"Received request: {request}")
     signature = request.headers.get("X-Line-Signature", "")
     r_body = await request.body()
