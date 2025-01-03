@@ -1,5 +1,13 @@
+import os
+import traceback
+import time
 import logging
+
+from dotenv import load_dotenv
 from fastapi import FastAPI, Request
+from linebot.v3 import WebhookHandler
+from linebot.v3.exceptions import InvalidSignatureError
+from linebot.v3.messaging import Configuration
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
