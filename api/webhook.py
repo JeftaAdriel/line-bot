@@ -23,13 +23,8 @@ async def webhook(request: fastapi.Request):
     signature = request.headers.get("X-Line-Signature", "")
     r_body = await request.body()
     body_str = r_body.decode("utf-8")
-    try:
-        print("sampai sini 3")
-        if not verify_signature(body_str, signature):
-            raise InvalidSignatureError("Invalid signature. signature=" + signature)
-        print("sampai sini 4")
-    except InvalidSignatureError as exc:
-        raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.") from exc
+    if not verify_signature(body_str, signature):
+        raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
 
     print("Received event: %s", r_body)
     print(f"Headers: {request.headers}")
