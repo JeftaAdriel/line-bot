@@ -22,6 +22,7 @@ handler = WebhookHandler(os.environ.get("LINE_CHANNEL_SECRET"))
 print("Sudah di sini 3")
 
 app = fastapi.FastAPI()
+print("Sudah di sini 4")
 
 
 @app.post("/webhook")
@@ -57,4 +58,4 @@ async def webhook(request: fastapi.Request):
     # print(f"Is Valid: {is_valid}")
 
     # Respond to acknowledge the request
-    return fastapi.responses.JSONResponse(content={"message": "OK"})
+    return {"status": "ok"}
