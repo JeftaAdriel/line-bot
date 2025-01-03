@@ -14,6 +14,6 @@ def send_message(reply_token):
         "messages": [{"type": "text", "text": "Hi!"}],
     }
 
-    response = requests.post(destination_url, headers=headers, data=data, timeout=10)
+    response = requests.post(destination_url, headers=headers, json=data, timeout=10)
     print(f"Response: {response}")
     return response

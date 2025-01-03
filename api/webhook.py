@@ -35,6 +35,7 @@ async def webhook(request: fastapi.Request):
         msg_events = [event for event in events if event.get("message", {}).get("type") == "text"]
         for event in msg_events:
             reply_token = event.get("replyToken")
+            print(f"reply_token: {reply_token}")
             send_message(reply_token)
 
         print(f"Received event: {r_body}")
