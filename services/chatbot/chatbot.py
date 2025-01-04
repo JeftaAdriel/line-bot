@@ -17,4 +17,4 @@ def process_event(MEMORY: Memory, LINEBOTHELPER: LineBotHelper, MODEL: LLMModel,
     prompt = MEMORY.get_chat_history(LINEBOTHELPER.get_user_id(event))
     response_dict = MODEL.get_response(prompt)
     response = response_dict["content"]
-    LINEBOTHELPER.send_reply_message(Memory, event, response)
+    LINEBOTHELPER.send_reply_message(MEMORY, event, response)

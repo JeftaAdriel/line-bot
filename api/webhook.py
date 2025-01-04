@@ -39,6 +39,7 @@ async def webhook(request: fastapi.Request):
         msg_events = [event for event in events if event.get("message", {}).get("type", "") == "text"]
         try:
             for event in msg_events:
+                LINEBOTHELPER.display_loading_animation(event)
                 chatbot.process_event(MEMORY, LINEBOTHELPER, MODEL, event)
         except Exception as e:
             print(f"Error processing message: {e}")

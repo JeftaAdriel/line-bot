@@ -70,7 +70,6 @@ class LineBotHelper:
             "replyToken": reply_token,
             "messages": [{"type": "text", "text": f"{response}"}],
         }
-        self.display_loading_animation(event)
         response = requests.post(destination_url, headers=headers, json=data, timeout=10)
         print(f"Response: {response.status_code}, {response.text}")
         MEMORY.add_chat_history(chatroom_id=self.get_user_id(event), message=f"Aiko: {data["messages"][0]["text"]}")
