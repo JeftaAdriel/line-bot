@@ -25,6 +25,9 @@ async def webhook(request: fastapi.Request):
         print(f"r_body_json: {r_body_json}")
         body_str = r_body.decode("utf-8")
 
+        print(f"body_str_type: {type(body_str)}")
+        print(f"signature_type: {type(signature)}")
+
         # signature validation
         if not verify_signature(body_str, signature):
             raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
@@ -36,8 +39,7 @@ async def webhook(request: fastapi.Request):
         for event in msg_events:
             reply_token = event.get("replyToken")
             print(f"reply_token: {reply_token}")
-            print(f"Access Token: {os.environ.get('LINE_CHANNEL_ACCESS_TOKEN')[:10]}...")
-            print(f"Channel Secret: {os.environ.get('LINE_CHANNEL_SECRET')[:10]}...")
+            print(f"reply_token_type: {type(reply_token)}")
             send_message(reply_token)
 
         print(f"Received event: {r_body}")
