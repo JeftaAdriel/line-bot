@@ -36,7 +36,7 @@ async def webhook(request: fastapi.Request):
         msg_events = [event for event in events if event.get("message", {}).get("type", "") == "text"]
         for event in msg_events:
             Memory.add_chat_history(
-                LineBotHelper.get_group_id(event), f"{LineBotHelper.get_profile_name(event)}: {LineBotHelper.get_message_text(event)}"
+                LineBotHelper.get_user_id(event), f"{LineBotHelper.get_profile_name(event)}: {LineBotHelper.get_message_text(event)}"
             )
             LineBotHelper.send_reply_message(event)
 
