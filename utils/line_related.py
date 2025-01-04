@@ -10,7 +10,7 @@ load_dotenv()
 headers = {"Authorization": f'Bearer {os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")}', "Content-Type": "application/json"}
 
 
-def verify_signature(body, x_line_signature):
+def verify_signature(body: str, x_line_signature: str):
     channel_secret = os.environ.get("LINE_CHANNEL_SECRET")
     if not channel_secret:
         raise ValueError("LINE_CHANNEL_SECRET is not set in environment variables.")
