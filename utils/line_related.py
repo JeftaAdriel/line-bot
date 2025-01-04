@@ -63,7 +63,7 @@ class LineBotHelper:
         return requests.get(destination_url, headers=headers, timeout=10)
 
     # Actions
-    def send_reply_message(self, memory: Memory, event: dict, response: str):
+    def send_reply_message(self, MEMORY: Memory, event: dict, response: str):
         reply_token = event["replyToken"]
         destination_url = f"{LINE_API_BASE_URL}/message/reply"
         data = {
@@ -73,11 +73,11 @@ class LineBotHelper:
         self.display_loading_animation(event)
         response = requests.post(destination_url, headers=headers, json=data, timeout=10)
         print(f"Response: {response.status_code}, {response.text}")
-        memory.add_chat_history(self.get_user_id(event), data["messages"][0]["text"])
+        MEMORY.add_chat_history(chatroom_id=self.get_user_id(event), message=f"Aiko: {data["messages"][0]["text"]}")
         return response
 
     def display_loading_animation(self, event: dict):
         user_id = self.get_user_id(event)
         destination_url = f"{LINE_API_BASE_URL}/chat/loading/start"
-        response = requests.post(destination_url, headers=headers, json={"chatId": user_id, "loadingSeconds": 10}, timeout=10)
+        response = requests.post(destination_url, headers=headers, json={"chatId": user_id, "loadingSeconds": 15}, timeout=10)
         return response

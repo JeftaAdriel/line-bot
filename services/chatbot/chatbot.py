@@ -11,7 +11,9 @@ load_dotenv()
 
 
 def process_event(MEMORY: Memory, LINEBOTHELPER: LineBotHelper, MODEL: LLMModel, event: dict):
-    MEMORY.add_chat_history(LINEBOTHELPER.get_user_id(event), f"{LINEBOTHELPER.get_profile_name(event)}: {LINEBOTHELPER.get_message_text(event)}")
+    MEMORY.add_chat_history(
+        chatroom_id=LINEBOTHELPER.get_user_id(event), message=f"{LINEBOTHELPER.get_profile_name(event)}: {LINEBOTHELPER.get_message_text(event)}"
+    )
     prompt = MEMORY.get_chat_history(LINEBOTHELPER.get_user_id(event))
     response_dict = MODEL.get_response(prompt)
     response = response_dict["content"]
