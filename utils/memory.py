@@ -14,5 +14,8 @@ class Memory:
     def get_chat_history(self, chatroom_id):
         return "".join(f"{chat}\n" for chat in self.chat_histories[chatroom_id])
 
+    def get_all_chat_history(self):
+        return self.chat_histories
+
     def clear_chat_history(self, chatroom_id):
         self.chat_histories[chatroom_id].clear()

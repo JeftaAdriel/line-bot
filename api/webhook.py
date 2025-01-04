@@ -42,7 +42,7 @@ async def webhook(request: fastapi.Request):
 
         print(f"Body: {r_body}")
         print(f"Headers: {request.headers}")
-        print(f"Memory: {Memory.get_chat_history(LineBotHelper.get_group_id(event))}")
+        print(f"Memory: {Memory.get_all_chat_history()}")
         return fastapi.responses.JSONResponse(content={"message": "OK"})
     except Exception as e:
         print(f"Error processing webhook: {e}")
