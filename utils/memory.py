@@ -1,14 +1,15 @@
 from collections import deque
-import config
+import configuration
 
 
 class Memory:
     def __init__(self):
         self.chat_histories = {}
+        self.model_responses = {}
 
     def add_chat_history(self, chatroom_id, message):
         if chatroom_id not in self.chat_histories:
-            self.chat_histories[chatroom_id] = deque(maxlen=config.MAX_MESSAGE)
+            self.chat_histories[chatroom_id] = deque(maxlen=configuration.MAX_MESSAGE)
         self.chat_histories[chatroom_id].append(message)
 
     def get_chat_history(self, chatroom_id):
