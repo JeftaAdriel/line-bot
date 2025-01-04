@@ -28,3 +28,16 @@ def send_message(reply_token: str):
     response = requests.post(destination_url, headers=headers, json=data, timeout=10)
     print(f"Response: {response.status_code}, {response.text}")
     return response
+
+
+def get_message_id(event: dict) -> str:
+    return event["message"]["id"]
+
+
+def get_content(event: dict) -> str:
+    """
+    Get content for other than text messages
+    """
+    message_id = get_message_id(event)
+    destination_url = f"https://api-data.line.me/v2/bot/message/{message_id}/content"
+    return requests.get(destination_url, headers=headers, timeout=10)

@@ -21,11 +21,7 @@ async def webhook(request: fastapi.Request):
         signature = request.headers.get("X-Line-Signature", "")
         r_body = await request.body()
         r_body_json = await request.json()
-        print(f"r_body_json: {r_body_json}")
         body_str = r_body.decode("utf-8")
-
-        print(f"body_str_type: {type(body_str)}")
-        print(f"signature_type: {type(signature)}")
 
         # signature validation
         if not line_related.verify_signature(body_str, signature):
@@ -38,10 +34,9 @@ async def webhook(request: fastapi.Request):
         for event in msg_events:
             reply_token = event.get("replyToken")
             print(f"reply_token: {reply_token}")
-            print(f"reply_token_type: {type(reply_token)}")
             line_related.send_message(reply_token)
 
-        print(f"Received event: {r_body}")
+        print(f"Body: {r_body}")
         print(f"Headers: {request.headers}")
         return fastapi.responses.JSONResponse(content={"message": "OK"})
     except Exception as e:

@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from pydantic_ai import Agent
 from pydantic_ai.models.mistral import MistralModel
 
-from models import config
+import config
 
 load_dotenv()
 
