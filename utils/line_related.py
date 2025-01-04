@@ -32,8 +32,14 @@ class LineBotHelper:
     def get_message_id(self, event: dict) -> str:
         return event["message"]["id"]
 
+    def get_message_source_type(self, event: dict) -> str:
+        return event["source"]["type"]
+
     def get_user_id(self, event: dict) -> str:
         return event["source"]["userId"]
+
+    def get_group_id(self, event: dict) -> str:
+        return event["source"]["groupId"]
 
     def get_profile(self, event: dict) -> dict:
         user_id = self.get_user_id(event)
