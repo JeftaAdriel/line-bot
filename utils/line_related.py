@@ -5,7 +5,7 @@ import os
 import requests
 import logging
 from dotenv import load_dotenv
-from utils.memory import Memory
+from utils import memory
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -63,7 +63,7 @@ class LineBotHelper:
         return requests.get(destination_url, headers=headers, timeout=10)
 
     # Actions
-    def send_reply_message(self, MEMORY: Memory, event: dict, response: str):
+    def send_reply_message(self, event: dict, response: str):
         reply_token = event["replyToken"]
         destination_url = f"{LINE_API_BASE_URL}/message/reply"
         data = {
@@ -72,7 +72,7 @@ class LineBotHelper:
         }
         response = requests.post(destination_url, headers=headers, json=data, timeout=10)
         print(f"Response: {response.status_code}, {response.text}")
-        MEMORY.add_chat_history(chatroom_id=self.get_user_id(event), message=f"Aiko: {data["messages"][0]["text"]}")
+        memory.add_chat_history(chatroom_id=self.get_user_id(event), message=f"Aiko: {data["messages"][0]["text"]}")
         return response
 
     def display_loading_animation(self, event: dict):

@@ -7,7 +7,7 @@ import fastapi
 from dotenv import load_dotenv
 
 from utils.line_related import LineBotHelper
-from utils.memory import Memory
+from utils import memory
 from services.llm_models.model import LLMModel
 from services.chatbot import chatbot
 
@@ -17,7 +17,6 @@ load_dotenv()
 
 app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()
-MEMORY = Memory()
 MODEL = LLMModel()
 
 
@@ -40,7 +39,7 @@ async def webhook(request: fastapi.Request):
         try:
             for event in msg_events:
                 LINEBOTHELPER.display_loading_animation(event)
-                chatbot.process_event(MEMORY, LINEBOTHELPER, MODEL, event)
+                chatbot.process_event(LINEBOTHELPER, MODEL, event)
         except Exception as e:
             print(f"Error processing message: {e}")
             traceback.print_exc()
@@ -48,7 +47,7 @@ async def webhook(request: fastapi.Request):
 
         print(f"Body: {r_body}")
         print(f"Headers: {request.headers}")
-        print(f"Memory: {MEMORY.get_all_chat_history()}")
+        print(f"Memory: {memory.get_all_chat_history()}")
         return fastapi.responses.JSONResponse(content={"message": "OK"})
     except Exception as e:
         print(f"Error processing webhook: {e}")

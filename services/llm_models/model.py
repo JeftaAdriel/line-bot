@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 
 import configuration
 
+from utils import memory
+
 load_dotenv()
 
 
