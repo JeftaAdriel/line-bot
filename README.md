@@ -126,7 +126,7 @@ Experience the bot firsthand on your LINE app using one of these simple methods:
 1. Directly scan the QR Code below
 
 <div align="center">
-  <img src="https://qr-official.line.me/gs/M_590wfnrk_GW.png?oat_content=qr" alt="LINE Bot QR Code" style="max-width: 200px;">
+  <img src="https://qr-official.line.me/gs/M_590wfnrk_GW.png" alt="LINE Bot QR Code" style="max-width: 200px;">
 </div>
 
 2. Click the button below and then scan the QR Code displayed on the website

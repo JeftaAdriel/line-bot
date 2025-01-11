@@ -43,7 +43,12 @@ class LineBotHelper:
 
     def get_profile(self, event: dict) -> dict:
         user_id = self.get_user_id(event)
-        destination_url = f"{LINE_API_BASE_URL}/profile/{user_id}"
+        source_type = self.get_message_source_type(event)
+        if source_type == "group":
+            group_id = self.get_group_id(event)
+            destination_url = f"{LINE_API_BASE_URL}/group/{group_id}/member/{user_id}"
+        elif source_type == "user":
+            destination_url = f"{LINE_API_BASE_URL}/profile/{user_id}"
         return requests.get(destination_url, headers=headers, timeout=10)
 
     def get_profile_name(self, event: dict) -> str:
