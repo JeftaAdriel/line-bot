@@ -7,7 +7,7 @@ import fastapi
 from dotenv import load_dotenv
 
 from utils.line_related import LineBotHelper
-from utils import memory
+from utils import memory, database_pantry
 from services.llm_models.model import LLMModel
 from services.chatbot import chatbot
 
@@ -23,11 +23,14 @@ try:
     chat_histories = memory.load_chat_histories_from_pantry()
 except ValueError as e:
     chat_histories = {}
+    database_pantry.create_basket(basket_name=memory.PANTRY_CHAT_HISTORY)
+
 
 try:
     model_responses = memory.load_model_responses_from_pantry()
 except ValueError as e:
     model_responses = {}
+    database_pantry.create_basket(basket_name=memory.PANTRY_MODEL_RESPONSES)
 
 
 @app.post("/webhook")

@@ -12,6 +12,17 @@ BASE_URL = f"https://getpantry.cloud/apiv1/pantry/{PANTRY_ID}"
 headers = {"Content-Type": "application/json"}
 
 
+def create_basket(basket_name: str):
+    """Create a new basket in Pantry (implicitly)."""
+    data = {}
+    response = requests.post(f"{BASE_URL}/basket/{basket_name}", headers=headers, json=data, timeout=10)
+    response.raise_for_status()
+    if response.status_code == 200:
+        print(f"The basket name '{basket_name}' has successfully been created")
+    elif response.status_code != 200:
+        raise ValueError(f"The basket name '{basket_name}' maybe has already been created")
+
+
 def store_data(basket_name: str, data: dict):
     """Store data in Pantry under the given basket name."""
     payload = {key: list(value) if isinstance(value, deque) else value for key, value in data.items()}
@@ -32,10 +43,10 @@ def retrieve_data(basket_name: str) -> dict:
         raise ValueError(f"The basket name '{basket_name}' has not been created so there is no data to be retrieved")
 
 
-def clear_data(basket_name: str):
+def delete_basket(basket_name: str):
     """Delete data from Pantry for the given basket name."""
     response = requests.delete(url=f"{BASE_URL}/basket/{basket_name}", headers=headers, timeout=10)
     if response.status_code == 200:
-        print(f"The data on {basket_name} as successfully been deleted")
+        print(f"The basket name '{basket_name}' has successfully been deleted")
     elif response.status_code != 200:
         raise ValueError(f"The basket name '{basket_name}' has not been created so there is no data to be stored")
