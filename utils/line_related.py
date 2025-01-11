@@ -5,7 +5,6 @@ import os
 import requests
 import logging
 from dotenv import load_dotenv
-from utils import memory
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
