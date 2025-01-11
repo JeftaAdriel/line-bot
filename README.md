@@ -125,11 +125,9 @@ Experience the bot firsthand on your LINE app using one of these simple methods:
 
 1. Directly scan the QR Code 
 
-![](https://qr-official.line.me/gs/M_590wfnrk_GW.png)
-
-<!-- <div align="center">
+<div align="center">
   <a href= "https://qr-official.line.me/gs/M_590wfnrk_GW.png"><img src="https://qr-official.line.me/gs/M_590wfnrk_GW.png" alt="Berteman" height=100 border="0"></a>
-</div> -->
+</div>
 
 2. Click the button below and then scan the QR Code displayed on the website
 
