@@ -72,7 +72,6 @@ class LineBotHelper:
         }
         response = requests.post(destination_url, headers=headers, json=data, timeout=10)
         print(f"Response: {response.status_code}, {response.text}")
-        memory.add_chat_history(chatroom_id=self.get_user_id(event), message=f"Aiko: {data["messages"][0]["text"]}")
         return response
 
     def display_loading_animation(self, event: dict):

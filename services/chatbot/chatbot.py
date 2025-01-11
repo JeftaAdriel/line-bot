@@ -3,6 +3,8 @@ import traceback
 
 from dotenv import load_dotenv
 
+import configuration
+
 from utils.line_related import LineBotHelper
 from utils import memory
 from services.llm_models.model import LLMModel
@@ -20,7 +22,9 @@ def process_event(LINEBOTHELPER: LineBotHelper, MODEL: LLMModel, event: dict, ch
     response_dict = MODEL.get_response(prompt)
     response = response_dict["content"]
     LINEBOTHELPER.send_reply_message(event, response)
-    memory.add_chat_history(chat_histories=chat_histories, chatroom_id=LINEBOTHELPER.get_user_id(event), message=f"Aiko: {response}")
+    memory.add_chat_history(
+        chat_histories=chat_histories, chatroom_id=LINEBOTHELPER.get_user_id(event), message=f"{configuration.BOT_NAME}: {response}"
+    )
     memory.add_model_responses(model_responses, LINEBOTHELPER.get_user_id(event), response_dict)
     memory.sync_chat_histories_to_pantry(chat_histories=chat_histories)
     memory.sync_model_responses_to_pantry(model_responses=model_responses)
