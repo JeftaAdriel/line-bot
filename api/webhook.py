@@ -19,6 +19,16 @@ app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()
 MODEL = LLMModel()
 
+try:
+    chat_histories = memory.load_chat_histories_from_pantry()
+except ValueError as e:
+    chat_histories = {}
+
+try:
+    model_responses = memory.load_model_responses_from_pantry()
+except ValueError as e:
+    model_responses = {}
+
 
 @app.post("/webhook")
 async def webhook(request: fastapi.Request):
@@ -39,7 +49,7 @@ async def webhook(request: fastapi.Request):
         try:
             for event in msg_events:
                 LINEBOTHELPER.display_loading_animation(event)
-                chatbot.process_event(LINEBOTHELPER, MODEL, event)
+                chatbot.process_event(LINEBOTHELPER, MODEL, event, chat_histories, model_responses)
         except Exception as e:
             print(f"Error processing message: {e}")
             traceback.print_exc()
@@ -47,7 +57,8 @@ async def webhook(request: fastapi.Request):
 
         print(f"Body: {r_body}")
         print(f"Headers: {request.headers}")
-        print(f"Memory: {memory.get_all_chat_history()}")
+        print(f"Chat History: {chat_histories}")
+        print(f"Model Responses: {model_responses}")
         return fastapi.responses.JSONResponse(content={"message": "OK"})
     except Exception as e:
         print(f"Error processing webhook: {e}")
