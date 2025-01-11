@@ -1,5 +1,7 @@
 # LINE-Bot Project
 
+Introducing Aikomiawase Aiko!
+
 This project is a LINE chatbot designed to interact with users, provide meaningful responses, and manage chat history using Pantry Cloud as a lightweight backend. The bot can intelligently process group and personal messages and is configurable for specific triggers, such as responding to mentions of a specific keyword (e.g., "Aiko").
 
 ---
@@ -13,6 +15,8 @@ This project is a LINE chatbot designed to interact with users, provide meaningf
 4. [Code Structure](#code-structure)
 5. [Acknowledgements](#acknowledgements)
 6. [Plans of Improvements](#plans-of-improvements)
+7. [Scan to Add the Bot](#scan-to-add-the-bot)
+8. [References](#references)
 
 ---
 
@@ -112,5 +116,34 @@ Feature Wise:
 Code Wise:
 1. Refactoring the code for better code quality
 2. Add documentation for the functions and classes for better readibility
+
+---
+
+## Scan to Add the Bot
+
+Experience the bot firsthand on your LINE app using one of these simple methods:
+
+1. Directly scan the QR Code below
+
+<div align="center">
+  <img src="https://qr-official.line.me/gs/M_590wfnrk_GW.png?oat_content=qr" alt="LINE Bot QR Code" style="max-width: 200px;">
+</div>
+
+2. Click the button below and then scan the QR Code displayed on the website
+
+<div align=center> <a href="https://lin.ee/I1ALAga"><img src="https://scdn.line-apps.com/n/line_add_friends/btn/id.png" alt="Berteman" height="36" border="0"></a>
+</div>
+
+3. Search for an official account by ID:
+- Tap the Add friends icon at the top right of the Home tab > Search > ID.
+- Search for the official account you want to add by entering <b> <u> @590wfnrk </u> </b>
+- Tap "Add" and you're good to go!
+
+---
+
+## References
+
+1. https://developers.line.biz/en/reference/messaging-api/
+2. https://gitlab.com/mnurichsan49
 
 ---
