@@ -80,11 +80,11 @@ line-bot/
 |-- .env                         # Store API Key and other credentials
 |-- .gitignore                   # Make sure to not commit redundant files and folders (.venv, __pycache__, etc) and confidential files (.env)
 |-- api/
-|-- |-- webhook.py               # The main code
+    |-- webhook.py               # The main code
 |-- utils/
-|   |-- line_related.py          # Helper functions for LINE API interactions
-|   |-- memory.py                # Functions for managing chat history and Pantry syncing
-|   |-- database_pantry.py       # Functions or wrapper for Pantry utilities (create basket, update basket, etc.)
+    |-- line_related.py          # Helper functions for LINE API interactions
+    |-- memory.py                # Functions for managing chat history and Pantry syncing
+    |-- database_pantry.py       # Functions or wrapper for Pantry utilities (create basket, update basket, etc.)
 |-- services/
     |-- llm_models/
         |-- model.py             # AI model integration logic
@@ -98,7 +98,7 @@ line-bot/
 
 ## Acknowledgements
 
-This project was heavily inspired by Muhammad Nur Ichsan’s LINE chatbot implementation ([Sara-Vanasi](https://gitlab.com/mnurichsan49)).
+This project was heavily inspired by Muhammad Nur Ichsan’s LINE chatbot implementation ([Sara-Vanasi](https://gitlab.com/mnurichsan49/sara-vanasi)).
 
 ---
 
