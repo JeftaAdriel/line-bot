@@ -14,11 +14,13 @@ load_dotenv()
 
 
 class LLMModel:
-    def __init__(self):
+    def __init__(self, system_prompt: str = configuration.SYSTEM_PROMPT, output_format=None):
         self.framework: str = configuration.FRAMEWORK
         self.provider: str = configuration.PROVIDER
         self.agent = None
         self.client = None
+        self.system_prompt: str = system_prompt
+        self.output_format = output_format
         self.responses: list[dict] = []
 
         # Initialize the model/agent based on the framework and provider
@@ -42,7 +44,7 @@ class LLMModel:
         else:
             raise ValueError(f"Unsupported provider for Pydantic AI: {self.provider}")
 
-        self.agent = Agent(f"{self.provider}:{model_name}", system_prompt=configuration.SYSTEM_PROMPT)
+        self.agent = Agent(f"{self.provider}:{model_name}", system_prompt=self.system_prompt)
 
     def _initialize_vanilla_model(self):
         """
@@ -53,7 +55,7 @@ class LLMModel:
             self.client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
         elif self.provider == "gemini":
             genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-            self.agent = genai.GenerativeModel(configuration.GEMINI_MODEL, system_instruction=configuration.SYSTEM_PROMPT)
+            self.agent = genai.GenerativeModel(configuration.GEMINI_MODEL, system_instruction=self.system_prompt)
         elif self.provider == "groq":
             self.agent = configuration.GROQ_MODEL
             self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
@@ -92,7 +94,7 @@ class LLMModel:
             result = response.text
         elif self.provider == "groq" or self.provider == "mistral":
             response = self.client.chat.complete(
-                model=self.agent, messages=[{"role": "system", "content": configuration.SYSTEM_PROMPT}, {"role": "user", "content": prompt}], **kwargs
+                model=self.agent, messages=[{"role": "system", "content": self.system_prompt}, {"role": "user", "content": prompt}], **kwargs
             )
             result = response.choices[0].message.content
         self.responses.append(response)

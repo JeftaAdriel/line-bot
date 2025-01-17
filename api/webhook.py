@@ -4,8 +4,6 @@ import time
 import logging
 import fastapi
 
-from dotenv import load_dotenv
-
 from utils.line_related import LineBotHelper
 from utils import memory, database_pantry
 from services.llm_models.model import LLMModel
@@ -13,7 +11,6 @@ from services.chatbot import chatbot
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-load_dotenv()
 
 app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()

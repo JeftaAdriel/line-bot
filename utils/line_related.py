@@ -4,27 +4,27 @@ import hmac
 import os
 import requests
 import logging
-from dotenv import load_dotenv
 
-load_dotenv()
+from configuration import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 LINE_API_BASE_URL = "https://api.line.me/v2/bot"
 LINE_API_DATA_URL = "https://api-data.line.me/v2/bot"
-headers = {"Authorization": f'Bearer {os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")}', "Content-Type": "application/json"}
+headers = {"Authorization": f'Bearer {LINE_CHANNEL_ACCESS_TOKEN}', "Content-Type": "application/json"}
 
 
 class LineBotHelper:
     def __init__(self):
-        self.headers = {"Authorization": f'Bearer {os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")}', "Content-Type": "application/json"}
-        self.channel_secret = os.environ.get("LINE_CHANNEL_SECRET")
-        self.access_token = os.environ.get("LINE_CHANNEL_ACCESS_TOKEN")
+        self.headers = headers
+        self.channel_secret = LINE_CHANNEL_SECRET
+        self.access_token = LINE_CHANNEL_ACCESS_TOKEN
 
     # Validations
     def verify_signature(self, body: str, x_line_signature: str) -> bool:
         if not self.channel_secret:
-            raise ValueError("LINE_CHANNEL_SECRET is not set in environment variables.")
+            raise ValueError("LINE_CHANNEL_SECRET is not set in environment variables (and maybe configuration.py).")
         gen_signature = hmac.new(self.channel_secret.encode("utf-8"), body.encode("utf-8"), hashlib.sha256).digest()
         return hmac.compare_digest(x_line_signature.encode("utf-8"), base64.b64encode(gen_signature))
 
