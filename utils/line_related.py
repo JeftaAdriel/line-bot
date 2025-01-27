@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 LINE_API_BASE_URL = "https://api.line.me/v2/bot"
 LINE_API_DATA_URL = "https://api-data.line.me/v2/bot"
-headers = {"Authorization": f'Bearer {LINE_CHANNEL_ACCESS_TOKEN}', "Content-Type": "application/json"}
+headers = {"Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}", "Content-Type": "application/json"}
 
 
 class LineBotHelper:
@@ -29,6 +29,9 @@ class LineBotHelper:
         return hmac.compare_digest(x_line_signature.encode("utf-8"), base64.b64encode(gen_signature))
 
     # Informations
+    def get_message_type(self, event: dict) -> str:
+        return event["message"]["type"]
+
     def get_message_id(self, event: dict) -> str:
         return event["message"]["id"]
 
@@ -44,6 +47,7 @@ class LineBotHelper:
     def get_profile(self, event: dict) -> dict:
         user_id = self.get_user_id(event)
         source_type = self.get_message_source_type(event)
+        destination_url = None
         if source_type == "group":
             group_id = self.get_group_id(event)
             destination_url = f"{LINE_API_BASE_URL}/group/{group_id}/member/{user_id}"

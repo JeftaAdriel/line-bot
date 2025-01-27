@@ -1,5 +1,8 @@
 import os
 
+from pydantic import BaseModel
+from typing import Optional, Literal, Any
+
 from pydantic_ai import Agent  # Framework: Pydantic AI
 import google.generativeai as genai  # Vanilla: Gemini
 from mistralai import Mistral  # Vanilla: Mistral
@@ -8,19 +11,24 @@ from dotenv import load_dotenv
 
 import configuration
 
-from utils import memory
-
 load_dotenv()
 
 
+class ModelArgs(BaseModel):
+    framework: Literal["pydantic-ai", "vanilla"] = configuration.FRAMEWORK
+    provider: Literal["gemini", "groq", "mistral"] = configuration.PROVIDER
+    system_prompt: str = configuration.SYSTEM_PROMPT
+    output_format: Optional[Any] = None
+
+
 class LLMModel:
-    def __init__(self, system_prompt: str = configuration.SYSTEM_PROMPT, output_format=None):
-        self.framework: str = configuration.FRAMEWORK
-        self.provider: str = configuration.PROVIDER
+    def __init__(self, model_args: ModelArgs):
+        self.framework: str = model_args.framework
+        self.provider: str = model_args.provider
+        self.system_prompt: str = model_args.system_prompt
+        self.output_format = model_args.output_format
         self.agent = None
         self.client = None
-        self.system_prompt: str = system_prompt
-        self.output_format = output_format
         self.responses: list[dict] = []
 
         # Initialize the model/agent based on the framework and provider
@@ -89,8 +97,14 @@ class LLMModel:
 
     def _generate_response_vanilla(self, prompt: str, **kwargs):
         result = None
+        response = None
         if self.provider == "gemini":
-            response = self.agent.generate_content(prompt, **kwargs)
+            if self.output_format is not None:
+                response = self.agent.generate_content(
+                    prompt, generation_config=genai.GenerationConfig(response_mime_type="application/json", response_schema=self.output_format)
+                )
+            elif self.output_format is None:
+                response = self.agent.generate_content(prompt)
             result = response.text
         elif self.provider == "groq" or self.provider == "mistral":
             response = self.client.chat.complete(

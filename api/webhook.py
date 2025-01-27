@@ -1,12 +1,10 @@
 import os
 import traceback
-import time
 import logging
 import fastapi
 
 from utils.line_related import LineBotHelper
 from utils import memory, database_pantry
-from services.llm_models.model import LLMModel
 from services.chatbot import chatbot
 
 # Set up logging
@@ -14,7 +12,6 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 
 app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()
-MODEL = LLMModel()
 
 try:
     chat_histories = memory.load_chat_histories_from_pantry()
@@ -43,13 +40,13 @@ async def webhook(request: fastapi.Request):
             raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
 
         events = r_body_json.get("events", [])
-
-        # processing text messages for now
-        msg_events = [event for event in events if event.get("message", {}).get("type", "") == "text"]
+        msg_events = [event for event in events if event.get("type", "") == "message"]
+        # msg_events = [event for event in events if event.get("message", {}).get("type", "") == "text"]
         try:
-            for event in msg_events:
-                LINEBOTHELPER.display_loading_animation(event)
-                chatbot.process_event(LINEBOTHELPER, MODEL, event, chat_histories, model_responses)
+            chatbot.handle_events(msg_events, chat_histories, model_responses)
+            # for event in msg_events:
+            #     LINEBOTHELPER.display_loading_animation(event)
+            #     chatbot.process_event(event, chat_histories, model_responses)
         except Exception as e:
             print(f"Error processing message: {e}")
             traceback.print_exc()
