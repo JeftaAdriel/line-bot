@@ -1,11 +1,16 @@
-import re
-from pydantic import BaseModel
-from typing import Optional, Literal, Any
+import re, requests, io
+import google.generativeai as genai
 
-from services.llm_models.model import LLMModel
+from typing import Optional, Literal, Any
+from pydantic import BaseModel
+
+import configuration
+
 from utils.line_related import LineBotHelper
 
 line_bot_helper = LineBotHelper()
+genai.configure(api_key=configuration.GEMINI_API_KEY)
+descriptor_agent = genai.GenerativeModel("gemini-1.5-flash")
 
 
 class TaskClassification(BaseModel):
@@ -20,12 +25,25 @@ class MessageArgs(BaseModel):
     profile_name: str
     task_classification: str
     should_respond: bool
+    content: Any
 
 
 def contains_aiko(message: str) -> bool:
     # Regex pattern to match variations of "Aiko" (case-insensitive, handles repeated letters)
     pattern = r"\b[aA]+[iI]+[kK]+[oO]+\b"
     return bool(re.search(pattern, message))
+
+
+def process_response_to_get_content(response: requests.models.Response):
+    binary_data = io.BytesIO(response.content)
+    media_type = response.headers.get("Content-Type", "")
+    myfile = genai.upload_file(binary_data, mime_type=media_type)
+    id = myfile.name
+    if media_type == "image/jpeg":
+        result = descriptor_agent.generate_content([myfile, "\n\n", "Describe the image in detail"])
+        description = result.text
+    elif media_type == "application/pdf":
+        
 
 
 def get_message_args(event: dict) -> MessageArgs:
@@ -45,6 +63,8 @@ def get_message_args(event: dict) -> MessageArgs:
 
     task_classification = "respond_message" if should_respond else "store_message"
 
+    content = line_bot_helper.get_content(event)
+
     return MessageArgs(
         source=source,
         media_type=media_type,
@@ -53,6 +73,7 @@ def get_message_args(event: dict) -> MessageArgs:
         profile_name=profile_name,
         task_classification=task_classification,
         should_respond=should_respond,
+        content=content,
     )
 
 

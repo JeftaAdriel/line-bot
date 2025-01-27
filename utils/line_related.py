@@ -6,6 +6,7 @@ import requests
 import logging
 
 from configuration import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET
+from utils import chatbot_utils
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -63,12 +64,20 @@ class LineBotHelper:
         return event["message"]["text"]
 
     def get_content(self, event: dict):
-        """
-        Get content for other than text messages
-        """
         message_id = self.get_message_id(event)
-        destination_url = f"{LINE_API_DATA_URL}/message/{message_id}/content"
-        return requests.get(destination_url, headers=headers, timeout=10)
+        media_type = self.get_message_type(event)
+        if media_type in ["text"]:
+            return self.get_message_text(event)
+        elif media_type in ["image", "video", "audio", "file"]:
+            destination_url = f"{LINE_API_DATA_URL}/message/{message_id}/content"
+            response = requests.get(destination_url, headers=headers, timeout=10)
+            if response.status_code == 200:
+                chatbot_utils.process_response_to_get_content(response)
+            else:
+                raise ValueError(f"Failed to get content from \n {event}")
+            pass
+        else:
+            raise ValueError("Unsupported media type")
 
     # Actions
     def send_reply_message(self, event: dict, response: str):

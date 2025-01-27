@@ -28,16 +28,11 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         else:
             raise ValueError("Source type is neither user nor group")
 
-        # Get the content of the message
-        content = ""
-        if args.media_type == "text":
-            content = LINEBOTHELPER.get_message_text(event)
-
         # Add message to chat history
         memory.add_chat_history(
             chat_histories=chat_histories,
             chatroom_id=use_id,
-            message=f"{args.profile_name}: {content}",
+            message=f"{args.profile_name}: {args.content}",
         )
 
         # Only get model response and reply if conditions are met
