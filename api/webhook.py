@@ -1,8 +1,6 @@
-import os
 import traceback
 import logging
 import fastapi
-
 from utils.line_related import LineBotHelper
 from utils import memory, database_pantry
 from services.chatbot import chatbot

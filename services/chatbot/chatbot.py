@@ -1,6 +1,5 @@
 import traceback
 import configuration
-
 from utils.line_related import LineBotHelper
 from utils import memory, chatbot_utils
 from services.llm_models.model import LLMModel, ModelArgs

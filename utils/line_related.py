@@ -1,19 +1,14 @@
-import base64
-import hashlib
-import hmac
-import os
-import requests
-import logging
-
-from configuration import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET
-from utils import chatbot_utils
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+import base64, hashlib, hmac
+import requests, io
+import google.generativeai as genai
+from configuration import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, GEMINI_API_KEY
 
 LINE_API_BASE_URL = "https://api.line.me/v2/bot"
 LINE_API_DATA_URL = "https://api-data.line.me/v2/bot"
 headers = {"Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}", "Content-Type": "application/json"}
+
+genai.configure(api_key=GEMINI_API_KEY)
+descriptor_agent = genai.GenerativeModel("gemini-1.5-flash")
 
 
 class LineBotHelper:
@@ -72,12 +67,24 @@ class LineBotHelper:
             destination_url = f"{LINE_API_DATA_URL}/message/{message_id}/content"
             response = requests.get(destination_url, headers=headers, timeout=10)
             if response.status_code == 200:
-                chatbot_utils.process_response_to_get_content(response)
+                self.process_response_to_get_content(response)
             else:
                 raise ValueError(f"Failed to get content from \n {event}")
             return ""
         else:
             raise ValueError("Unsupported media type")
+
+    def process_response_to_get_content(self, response: requests.models.Response):
+        binary_data = io.BytesIO(response.content)
+        media_type = response.headers.get("Content-Type", "")
+        myfile = genai.upload_file(binary_data, mime_type=media_type)
+        id = myfile.name
+        if media_type == "image/jpeg":
+            result = descriptor_agent.generate_content([myfile, "\n\n", "Describe the image in detail"])
+            description = result.text
+        elif media_type == "application/pdf":
+            print("hmm")
+        return id
 
     # Actions
     def send_reply_message(self, event: dict, response: str):

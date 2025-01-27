@@ -1,16 +1,9 @@
-import re, requests, io
-import google.generativeai as genai
-
+import re
 from typing import Optional, Literal, Any
 from pydantic import BaseModel
-
-import configuration
-
 from utils.line_related import LineBotHelper
 
 line_bot_helper = LineBotHelper()
-genai.configure(api_key=configuration.GEMINI_API_KEY)
-descriptor_agent = genai.GenerativeModel("gemini-1.5-flash")
 
 
 class TaskClassification(BaseModel):
@@ -32,19 +25,6 @@ def contains_aiko(message: str) -> bool:
     # Regex pattern to match variations of "Aiko" (case-insensitive, handles repeated letters)
     pattern = r"\b[aA]+[iI]+[kK]+[oO]+\b"
     return bool(re.search(pattern, message))
-
-
-def process_response_to_get_content(response: requests.models.Response):
-    binary_data = io.BytesIO(response.content)
-    media_type = response.headers.get("Content-Type", "")
-    myfile = genai.upload_file(binary_data, mime_type=media_type)
-    id = myfile.name
-    if media_type == "image/jpeg":
-        result = descriptor_agent.generate_content([myfile, "\n\n", "Describe the image in detail"])
-        description = result.text
-    elif media_type == "application/pdf":
-        print("hmm")
-    return id
 
 
 def get_message_args(event: dict) -> MessageArgs:
