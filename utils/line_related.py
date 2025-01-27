@@ -75,7 +75,7 @@ class LineBotHelper:
                 chatbot_utils.process_response_to_get_content(response)
             else:
                 raise ValueError(f"Failed to get content from \n {event}")
-            pass
+            return ""
         else:
             raise ValueError("Unsupported media type")
 

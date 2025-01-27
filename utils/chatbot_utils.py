@@ -43,7 +43,8 @@ def process_response_to_get_content(response: requests.models.Response):
         result = descriptor_agent.generate_content([myfile, "\n\n", "Describe the image in detail"])
         description = result.text
     elif media_type == "application/pdf":
-        
+        print("hmm")
+    return id
 
 
 def get_message_args(event: dict) -> MessageArgs:
