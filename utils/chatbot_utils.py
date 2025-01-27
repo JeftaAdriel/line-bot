@@ -1,5 +1,6 @@
 import re
 from typing import Optional, Literal, Any
+import google.generativeai as genai
 from pydantic import BaseModel
 from utils.line_related import LineBotHelper
 
@@ -56,6 +57,10 @@ def get_message_args(event: dict) -> MessageArgs:
         should_respond=should_respond,
         content=content,
     )
+
+
+def get_media_metadata(media: genai.types.file_types.File):
+    pass
 
 
 # TaskClassificationModel = LLMModel()

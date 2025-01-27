@@ -11,18 +11,9 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()
 
-try:
-    chat_histories = memory.load_chat_histories_from_pantry()
-except ValueError as e:
-    chat_histories = {}
-    database_pantry.create_basket(basket_name=memory.PANTRY_CHAT_HISTORY)
-
-
-try:
-    model_responses = memory.load_model_responses_from_pantry()
-except ValueError as e:
-    model_responses = {}
-    database_pantry.create_basket(basket_name=memory.PANTRY_MODEL_RESPONSES)
+chat_histories = memory.load_from_pantry(basket_name=memory.PANTRY_CHAT_HISTORY)
+model_responses = memory.load_from_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES)
+media_metadata = memory.load_from_pantry(basket_name=memory.PANTRY_MEDIA_METADATA)
 
 
 @app.post("/webhook")

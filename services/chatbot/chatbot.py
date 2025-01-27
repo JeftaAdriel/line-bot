@@ -47,8 +47,10 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
             memory.add_model_responses(model_responses, use_id, response_dict)
 
         # Sync histories regardless of whether we responded
-        memory.sync_chat_histories_to_pantry(chat_histories=chat_histories)
-        memory.sync_model_responses_to_pantry(model_responses=model_responses)
+        memory.sync_to_pantry(basket_name=memory.PANTRY_CHAT_HISTORY, data=chat_histories)
+        memory.sync_to_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES, data=model_responses)
+        # memory.sync_chat_histories_to_pantry(chat_histories=chat_histories)
+        # memory.sync_model_responses_to_pantry(model_responses=model_responses)
 
     except Exception as e:
         print("Error processing event:", e)
