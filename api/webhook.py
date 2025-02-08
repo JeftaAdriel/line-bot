@@ -2,7 +2,7 @@ import traceback
 import logging
 import fastapi
 from utils.line_related import LineBotHelper
-from utils import memory, database_pantry
+from utils import memory
 from services.chatbot import chatbot
 
 # Set up logging

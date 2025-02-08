@@ -52,9 +52,6 @@ def get_message_args(event: dict) -> MessageArgs:
     else:
         quoted_message_id = None
 
-    print(f"myfile Y: {myfile}")
-    print(f"myfile type Y: {type(myfile)}")
-
     return MessageArgs(
         message_id=message_id,
         source=source,

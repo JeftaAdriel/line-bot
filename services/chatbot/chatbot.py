@@ -1,10 +1,12 @@
-import traceback
+import traceback, os
 import google.generativeai as old_genai
 import configuration
 from utils.line_related import LineBotHelper
 from utils import memory, chatbot_utils
 from services.llm_models.model import LLMModel, ModelArgs
 
+old_genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+client = old_genai.GenerativeModel(configuration.GEMINI_MODEL, system_instruction=configuration.SYSTEM_PROMPT)
 model_args = ModelArgs(framework=configuration.FRAMEWORK, provider=configuration.PROVIDER, system_prompt=configuration.SYSTEM_PROMPT)
 
 LINEBOTHELPER = LineBotHelper()
@@ -28,9 +30,6 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         else:
             raise ValueError("Source type is neither user nor group")
 
-        print(f"myfile: {type(args.myfile)}")
-        print(f"myfile type 3: {type(args.myfile)}")
-
         # Update memory
         if args.media_type == "text":
             message = f"{args.profile_name}: {args.content}"
@@ -53,12 +52,15 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
                 if filename is not None:
                     myfile = old_genai.get_file(filename)
                     prompt = [myfile, args.content]
+                    result = client.generate_content(prompt)
+                    response_dict = {"content": result.text}
                 else:
                     prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
+                    response_dict = MODEL.get_response(prompt)
             else:
                 prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
+                response_dict = MODEL.get_response(prompt)
 
-            response_dict = MODEL.get_response(prompt)
             response = response_dict["content"]
 
             # Send reply and update histories

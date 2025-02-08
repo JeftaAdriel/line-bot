@@ -64,7 +64,6 @@ class LineBotHelper:
     def get_content_and_file(self, event: dict):
         message_id = self.get_message_id(event)
         media_type = self.get_message_type(event)
-        print(f"media_type 1: {media_type}")
         if media_type in ["text"]:
             content = self.get_message_text(event)
             return content, None
@@ -74,7 +73,6 @@ class LineBotHelper:
             if response.status_code == 200:
                 myfile = self.store_media_to_gemini_file(response)
                 content = self.get_file_description(myfile, media_type)
-                print(f"myfile type 1: {type(myfile)}")
                 return content, myfile
             else:
                 raise ValueError(f"Failed to get content from \n {event}")
@@ -85,7 +83,6 @@ class LineBotHelper:
         binary_data = io.BytesIO(response.content)
         content_type = response.headers.get("Content-Type", "")
         myfile = old_genai.upload_file(binary_data, mime_type=content_type)
-        print(f"myfile type X: {type(myfile)}")
         return myfile
 
     def get_file_description(self, myfile: old_genai.types.file_types.File, media_type: str):
