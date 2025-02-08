@@ -64,10 +64,11 @@ class LineBotHelper:
     def get_content_and_file(self, event: dict):
         message_id = self.get_message_id(event)
         media_type = self.get_message_type(event)
+        print(f"media_type 1: {media_type}")
         if media_type in ["text"]:
             content = self.get_message_text(event)
             return {"content": content, "myfile": None}
-        elif media_type in {"image", "video", "audio", "file"}:
+        elif media_type in ["image", "video", "audio", "file"]:
             destination_url = f"{LINE_API_DATA_URL}/message/{message_id}/content"
             response = requests.get(destination_url, headers=headers, timeout=10)
             if response.status_code == 200:

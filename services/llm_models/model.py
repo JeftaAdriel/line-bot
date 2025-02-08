@@ -115,7 +115,7 @@ class LLMModel:
                 ),
             )
             result = response.text
-        # elif self.provider in {"groq", "mistral"}:
+        # elif self.provider in ["groq", "mistral"]:
         #     response = self.client.chat.complete(
         #         model=self.model_name, messages=[{"role": "system", "content": self.system_prompt}, {"role": "user", "content": prompt}], **kwargs
         #     )
