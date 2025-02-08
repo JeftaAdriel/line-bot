@@ -98,7 +98,7 @@ class LLMModel:
         # return {"content": result}
         pass
 
-    def _generate_response_vanilla(self, prompt: str, **kwargs):
+    def _generate_response_vanilla(self, prompt: list):
         result = None
         response = None
         if self.provider == "gemini":

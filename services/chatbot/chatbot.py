@@ -32,10 +32,14 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         print(f"myfile type 3: {type(args.myfile)}")
 
         # Update memory
+        if args.media_type == "text":
+            message = f"{args.profile_name}: {args.content}"
+        else:
+            message = f"{args.profile_name} {args.content}"
         memory.add_chat_history(
             chat_histories=chat_histories,
             chatroom_id=use_id,
-            message=f"{args.profile_name}: {args.content}",
+            message=message,
         )
         memory.clear_expired_media_metadata(media_metadata=media_metadata, chatroom_id=use_id)
         if args.myfile is not None:
@@ -50,9 +54,9 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
                     myfile = old_genai.get_file(filename)
                     prompt = [myfile, args.content]
                 else:
-                    prompt = memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)
+                    prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
             else:
-                prompt = memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)
+                prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
 
             response_dict = MODEL.get_response(prompt)
             response = response_dict["content"]

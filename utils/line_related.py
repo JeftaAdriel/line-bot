@@ -90,7 +90,7 @@ class LineBotHelper:
 
     def get_file_description(self, myfile: old_genai.types.file_types.File, media_type: str):
         result = descriptor_agent.generate_content(
-            [myfile, f"Describe the {media_type} in detail in 2 sentence. Start your response with 'Give an {media_type} about' "]
+            [myfile, f"Deskripsikan {media_type} ini dengan rinci dalam 2 kalimat. Mulai deskripsi Anda dengan 'Memberikan {media_type} tentang' "]
         )
         description = result.text
         return description
