@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from typing import Optional, Literal, Any
 
 from pydantic_ai import Agent  # Framework: Pydantic AI
-import google.generativeai as genai  # Vanilla: Gemini
+from google import genai as new_genai
+from google.genai import types
 from mistralai import Mistral  # Vanilla: Mistral
 from groq import Groq  # Vanilla: Groq
 from dotenv import load_dotenv
@@ -27,8 +28,8 @@ class LLMModel:
         self.provider: str = model_args.provider
         self.system_prompt: str = model_args.system_prompt
         self.output_format = model_args.output_format
-        self.agent = None
         self.client = None
+        self.model_name = None
         self.responses: list[dict] = []
 
         # Initialize the model/agent based on the framework and provider
@@ -44,28 +45,28 @@ class LLMModel:
         Initialize the Pydantic AI agent.
         """
         if self.provider == "mistral":
-            model_name = configuration.MISTRAL_MODEL
+            self.model_name = configuration.MISTRAL_MODEL
         elif self.provider == "gemini":
-            model_name = configuration.GEMINI_MODEL
+            self.model_name = configuration.GEMINI_MODEL
         elif self.provider == "groq":
-            model_name = configuration.GROQ_MODEL
+            self.model_name = configuration.GROQ_MODEL
         else:
             raise ValueError(f"Unsupported provider for Pydantic AI: {self.provider}")
 
-        self.agent = Agent(f"{self.provider}:{model_name}", system_prompt=self.system_prompt)
+        self.client = Agent(f"{self.provider}:{self.model_name}", system_prompt=self.system_prompt)
 
     def _initialize_vanilla_model(self):
         """
         Initialize the vanilla API client.
         """
         if self.provider == "mistral":
-            self.agent = configuration.MISTRAL_MODEL
+            self.model_name = configuration.MISTRAL_MODEL
             self.client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
         elif self.provider == "gemini":
-            genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-            self.agent = genai.GenerativeModel(configuration.GEMINI_MODEL, system_instruction=self.system_prompt)
+            self.model_name = configuration.GEMINI_MODEL
+            self.client = new_genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         elif self.provider == "groq":
-            self.agent = configuration.GROQ_MODEL
+            self.model_name = configuration.GROQ_MODEL
             self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
         else:
             raise ValueError(f"Unsupported provider for vanilla API: {self.provider}")
@@ -90,7 +91,7 @@ class LLMModel:
 
     def _generate_response_pydantic_ai(self, prompt: str, **kwargs):
         result = None
-        response = self.agent.run_sync(prompt, **kwargs)
+        response = self.client.run_sync(prompt, **kwargs)
         self.responses.append(response)
         result = response.data
         return {"content": result}
@@ -99,16 +100,22 @@ class LLMModel:
         result = None
         response = None
         if self.provider == "gemini":
-            if self.output_format is not None:
-                response = self.agent.generate_content(
-                    prompt, generation_config=genai.GenerationConfig(response_mime_type="application/json", response_schema=self.output_format)
-                )
-            elif self.output_format is None:
-                response = self.agent.generate_content(prompt)
+            response = self.client.models.generate_content(
+                model=self.model_name,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    system_instruction=self.system_prompt,
+                    tools=[
+                        types.Tool(
+                            google_search=types.GoogleSearchRetrieval(dynamic_retrieval_config=types.DynamicRetrievalConfig(dynamic_threshold=0.6))
+                        )
+                    ],
+                ),
+            )
             result = response.text
-        elif self.provider == "groq" or self.provider == "mistral":
+        elif self.provider in {"groq", "mistral"}:
             response = self.client.chat.complete(
-                model=self.agent, messages=[{"role": "system", "content": self.system_prompt}, {"role": "user", "content": prompt}], **kwargs
+                model=self.model_name, messages=[{"role": "system", "content": self.system_prompt}, {"role": "user", "content": prompt}], **kwargs
             )
             result = response.choices[0].message.content
         self.responses.append(response)

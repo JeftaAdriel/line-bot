@@ -1,14 +1,14 @@
 import base64, hashlib, hmac
 import requests, io
-import google.generativeai as genai
+import google.generativeai as old_genai
 from configuration import LINE_CHANNEL_ACCESS_TOKEN, LINE_CHANNEL_SECRET, GEMINI_API_KEY
 
 LINE_API_BASE_URL = "https://api.line.me/v2/bot"
 LINE_API_DATA_URL = "https://api-data.line.me/v2/bot"
 headers = {"Authorization": f"Bearer {LINE_CHANNEL_ACCESS_TOKEN}", "Content-Type": "application/json"}
 
-genai.configure(api_key=GEMINI_API_KEY)
-descriptor_agent = genai.GenerativeModel("gemini-1.5-flash")
+old_genai.configure(api_key=GEMINI_API_KEY)
+descriptor_agent = old_genai.GenerativeModel("gemini-2.0-flash")
 
 
 class LineBotHelper:
@@ -30,6 +30,9 @@ class LineBotHelper:
 
     def get_message_id(self, event: dict) -> str:
         return event["message"]["id"]
+
+    def get_quoted_message_id(self, event: dict) -> str:
+        return event["message"]["quotedMessageId"]
 
     def get_message_source_type(self, event: dict) -> str:
         return event["source"]["type"]
@@ -58,33 +61,46 @@ class LineBotHelper:
     def get_message_text(self, event: dict) -> str:
         return event["message"]["text"]
 
-    def get_content(self, event: dict):
+    def get_content_and_file(self, event: dict):
         message_id = self.get_message_id(event)
         media_type = self.get_message_type(event)
         if media_type in ["text"]:
-            return self.get_message_text(event)
-        elif media_type in ["image", "video", "audio", "file"]:
+            content = self.get_message_text(event)
+            return {"content": content, "myfile": None}
+        elif media_type in {"image", "video", "audio", "file"}:
             destination_url = f"{LINE_API_DATA_URL}/message/{message_id}/content"
             response = requests.get(destination_url, headers=headers, timeout=10)
             if response.status_code == 200:
-                self.process_response_to_get_content(response)
+                myfile = self.store_media_to_gemini_file(response)
+                content = self.get_file_description(myfile, media_type)
+                return {"content": content, "myfile": myfile}
             else:
                 raise ValueError(f"Failed to get content from \n {event}")
-            return ""
         else:
             raise ValueError("Unsupported media type")
 
-    def process_response_to_get_content(self, response: requests.models.Response):
+    def store_media_to_gemini_file(self, response: requests.models.Response):
         binary_data = io.BytesIO(response.content)
-        media_type = response.headers.get("Content-Type", "")
-        myfile = genai.upload_file(binary_data, mime_type=media_type)
-        id = myfile.name
-        if media_type == "image/jpeg":
-            result = descriptor_agent.generate_content([myfile, "\n\n", "Describe the image in detail"])
-            description = result.text
-        elif media_type == "application/pdf":
-            print("hmm")
-        return id
+        content_type = response.headers.get("Content-Type", "")
+        myfile = old_genai.upload_file(binary_data, mime_type=content_type)
+        return myfile
+
+    def get_file_description(self, myfile: old_genai.types.file_types.File, media_type: str):
+        result = descriptor_agent.generate_content(
+            [myfile, f"Describe the {media_type} in detail in 2 sentence. Start your response with 'Give an {media_type} about' "]
+        )
+        description = result.text
+        return description
+
+    def get_filename(self, media_metadata: dict, quoted_message_id: str, chatroom_id: str):
+        filename = None
+        if chatroom_id not in media_metadata:
+            return None
+        for entry in media_metadata[chatroom_id]:
+            if entry["message_id"] == quoted_message_id:
+                filename = entry["filename"]
+
+        return filename
 
     # Actions
     def send_reply_message(self, event: dict, response: str):

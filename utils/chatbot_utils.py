@@ -1,6 +1,5 @@
 import re
 from typing import Optional, Literal, Any
-import google.generativeai as genai
 from pydantic import BaseModel
 from utils.line_related import LineBotHelper
 
@@ -12,6 +11,7 @@ class TaskClassification(BaseModel):
 
 
 class MessageArgs(BaseModel):
+    message_id: str
     source: Literal["user", "group"]
     media_type: Literal["text", "image", "video", "audio", "file"]
     group_id: Optional[str]
@@ -20,6 +20,8 @@ class MessageArgs(BaseModel):
     task_classification: str
     should_respond: bool
     content: Any
+    myfile: Any
+    quoted_message_id: Optional[str]
 
 
 def contains_aiko(message: str) -> bool:
@@ -29,25 +31,29 @@ def contains_aiko(message: str) -> bool:
 
 
 def get_message_args(event: dict) -> MessageArgs:
+    message_id = line_bot_helper.get_message_id(event)
     source = line_bot_helper.get_message_source_type(event)
     media_type = line_bot_helper.get_message_type(event)
     group_id = line_bot_helper.get_group_id(event) if source == "group" else None
     user_id = line_bot_helper.get_user_id(event)
     profile_name = line_bot_helper.get_profile_name(event)
-
     should_respond = False
+    content, myfile = line_bot_helper.get_content_and_file(event)
     if media_type == "text":
-        message_text = line_bot_helper.get_message_text(event)
         if source == "group":
-            should_respond = contains_aiko(message_text)  # Only respond if "Aiko" is mentioned
+            should_respond = contains_aiko(content)  # Only respond if "Aiko" is mentioned
         elif source == "user":
             should_respond = True  # Alwyas respond to direct messages
 
     task_classification = "respond_message" if should_respond else "store_message"
 
-    content = line_bot_helper.get_content(event)
+    if "quotedMessageId" in event["message"]:
+        quoted_message_id = line_bot_helper.get_quoted_message_id(event)
+    else:
+        quoted_message_id = None
 
     return MessageArgs(
+        message_id=message_id,
         source=source,
         media_type=media_type,
         group_id=group_id,
@@ -56,11 +62,9 @@ def get_message_args(event: dict) -> MessageArgs:
         task_classification=task_classification,
         should_respond=should_respond,
         content=content,
+        myfile=myfile,
+        quoted_message_id=quoted_message_id,
     )
-
-
-def get_media_metadata(media: genai.types.file_types.File):
-    pass
 
 
 # TaskClassificationModel = LLMModel()

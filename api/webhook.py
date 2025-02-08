@@ -11,9 +11,20 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()
 
-chat_histories = memory.load_from_pantry(basket_name=memory.PANTRY_CHAT_HISTORY)
-model_responses = memory.load_from_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES)
-media_metadata = memory.load_from_pantry(basket_name=memory.PANTRY_MEDIA_METADATA)
+try:
+    chat_histories = memory.load_from_pantry(basket_name=memory.PANTRY_CHAT_HISTORY)
+except ValueError:
+    chat_histories = {}
+
+try:
+    model_responses = memory.load_from_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES)
+except ValueError:
+    model_responses = {}
+
+try:
+    media_metadata = memory.load_from_pantry(basket_name=memory.PANTRY_MEDIA_METADATA)
+except ValueError:
+    media_metadata = {}
 
 
 @app.post("/webhook")
@@ -32,10 +43,7 @@ async def webhook(request: fastapi.Request):
         msg_events = [event for event in events if event.get("type", "") == "message"]
         # msg_events = [event for event in events if event.get("message", {}).get("type", "") == "text"]
         try:
-            chatbot.handle_events(msg_events, chat_histories, model_responses)
-            # for event in msg_events:
-            #     LINEBOTHELPER.display_loading_animation(event)
-            #     chatbot.process_event(event, chat_histories, model_responses)
+            chatbot.handle_events(msg_events, chat_histories, model_responses, media_metadata)
         except Exception as e:
             print(f"Error processing message: {e}")
             traceback.print_exc()

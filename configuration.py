@@ -29,7 +29,7 @@ Pastikan jawabanmu tidak lebih lebih dari 2 kalimat, kecuali kondisi mengharuska
 # Model provider related
 FRAMEWORK = "vanilla"  # ["pydantic-ai", "vanilla"]
 PROVIDER = "gemini"  # ["mistral", "groq", "gemini"]
-GEMINI_MODEL = "gemini-1.5-flash"
+GEMINI_MODEL = "gemini-2.0-flash"
 MISTRAL_MODEL = "pixtral-12b-2409"
 GROQ_MODEL = "llama-3.3-70b-versatile"
 

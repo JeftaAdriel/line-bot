@@ -1,5 +1,6 @@
+import google.generativeai as old_genai
 from collections import deque
-from datetime import datetime, timedelta
+from datetime import datetime, timezone
 import configuration
 from utils import database_pantry
 
@@ -10,36 +11,12 @@ PANTRY_MEDIA_METADATA = "media_metadata"
 
 def sync_to_pantry(basket_name: str, data: dict):
     """Sync in data for the given basket name with Pantry."""
-    try:
-        database_pantry.store_data(basket_name, data)
-    except ValueError:
-        database_pantry.create_basket(basket_name)
-        database_pantry.store_data(basket_name, data)
-
-
-# def sync_chat_histories_to_pantry(chat_histories: dict):
-#     """Sync in-memory chat histories with Pantry."""
-#     database_pantry.store_data(PANTRY_CHAT_HISTORY, chat_histories)
+    database_pantry.store_data(basket_name, data)
 
 
 def load_from_pantry(basket_name: str) -> dict:
     """Load data from the basket name in Pantry into memory."""
-    try:
-        return database_pantry.retrieve_data(basket_name)
-    except ValueError:
-        database_pantry.create_basket(basket_name)
-        return {}
-
-
-# def sync_model_responses_to_pantry(model_responses: dict):
-#     """Sync in-memory model responses with Pantry."""
-#     database_pantry.store_data(PANTRY_MODEL_RESPONSES, model_responses)
-
-
-# def load_model_responses_from_pantry():
-#     """Load model responses from Pantry into memory."""
-#     model_responses = database_pantry.retrieve_data(PANTRY_MODEL_RESPONSES)
-#     return model_responses
+    return database_pantry.retrieve_data(basket_name)
 
 
 def add_chat_history(chat_histories: dict, chatroom_id: str, message: str):
@@ -62,15 +39,14 @@ def add_model_responses(model_responses, chatroom_id: str, response: dict):
     model_responses[chatroom_id].append(response)
 
 
-# def add_media_metadata(media_metadata: dict, media_id: str, chatroom_id: str, filename: str):
-#     """Store media metadata with expiry time (48 hours from now)."""
-#     upload_time = datetime.now()
-#     expiry_time = upload_time + timedelta(hours=48)
-#     if chatroom_id not in media_metadata:
-#         media_metadata[chatroom_id] = {}
-#     media_metadata[chatroom_id][media_id] = {
-#         'expiry': expiry_time.isoformat(),
-#         'filename': filename,
-#         'upload_time': upload_time.isoformat()
-#     }
-#     sync_media_metadata_to_pantry(media_metadata)
+def add_media_metadata(media_metadata: dict, chatroom_id: str, message_id: str, file: old_genai.types.file_types.File):
+    if chatroom_id not in media_metadata:
+        media_metadata[chatroom_id] = []
+    media_metadata[chatroom_id].append({"filename": file.name, "expiration_time": file.expiration_time, "message_id": message_id})
+
+
+def clear_expired_media_metadata(media_metadata: dict, chatroom_id: str):
+    if chatroom_id not in media_metadata:
+        return
+    now = datetime.now(timezone.utc)
+    media_metadata[chatroom_id] = [entry for entry in media_metadata[chatroom_id] if entry["expiration_time"] > now]
