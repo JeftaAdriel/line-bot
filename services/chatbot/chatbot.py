@@ -64,7 +64,8 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         # Sync histories regardless of whether we responded
         memory.sync_to_pantry(basket_name=memory.PANTRY_CHAT_HISTORY, data=chat_histories)
         memory.sync_to_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES, data=model_responses)
-        memory.sync_to_pantry(basket_name=memory.PANTRY_MEDIA_METADATA, data=media_metadata)
+        if args.myfile is not None:
+            memory.sync_to_pantry(basket_name=memory.PANTRY_MEDIA_METADATA, data=media_metadata)
 
     except Exception as e:
         print("Error processing event:", e)
