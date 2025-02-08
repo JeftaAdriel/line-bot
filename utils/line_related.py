@@ -67,7 +67,7 @@ class LineBotHelper:
         print(f"media_type 1: {media_type}")
         if media_type in ["text"]:
             content = self.get_message_text(event)
-            return {"content": content, "myfile": None}
+            return content, None
         elif media_type in ["image", "video", "audio", "file"]:
             destination_url = f"{LINE_API_DATA_URL}/message/{message_id}/content"
             response = requests.get(destination_url, headers=headers, timeout=10)
@@ -75,7 +75,7 @@ class LineBotHelper:
                 myfile = self.store_media_to_gemini_file(response)
                 content = self.get_file_description(myfile, media_type)
                 print(f"myfile type 1: {type(myfile)}")
-                return {"content": content, "myfile": myfile}
+                return content, myfile
             else:
                 raise ValueError(f"Failed to get content from \n {event}")
         else:
