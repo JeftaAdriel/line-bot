@@ -84,6 +84,7 @@ class LineBotHelper:
         binary_data = io.BytesIO(response.content)
         content_type = response.headers.get("Content-Type", "")
         myfile = old_genai.upload_file(binary_data, mime_type=content_type)
+        print(f"myfile type X: {type(myfile)}")
         return myfile
 
     def get_file_description(self, myfile: old_genai.types.file_types.File, media_type: str):
