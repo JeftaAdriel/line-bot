@@ -28,6 +28,8 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         else:
             raise ValueError("Source type is neither user nor group")
 
+        print(f"myfile type 3: {type(args.myfile)}")
+
         # Update memory
         memory.add_chat_history(
             chat_histories=chat_histories,

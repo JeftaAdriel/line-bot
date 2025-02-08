@@ -73,6 +73,7 @@ class LineBotHelper:
             if response.status_code == 200:
                 myfile = self.store_media_to_gemini_file(response)
                 content = self.get_file_description(myfile, media_type)
+                print(f"myfile type 1: {type(myfile)}")
                 return {"content": content, "myfile": myfile}
             else:
                 raise ValueError(f"Failed to get content from \n {event}")
