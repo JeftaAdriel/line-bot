@@ -42,11 +42,11 @@ def add_model_responses(model_responses, chatroom_id: str, response: dict):
 def add_media_metadata(media_metadata: dict, chatroom_id: str, message_id: str, file: old_genai.types.file_types.File):
     if chatroom_id not in media_metadata:
         media_metadata[chatroom_id] = []
-    media_metadata[chatroom_id].append({"filename": file.name, "expiration_time": file.expiration_time, "message_id": message_id})
+    media_metadata[chatroom_id].append({"filename": file.name, "expiration_time": file.expiration_time.isoformat(), "message_id": message_id})
 
 
 def clear_expired_media_metadata(media_metadata: dict, chatroom_id: str):
     if chatroom_id not in media_metadata:
         return
     now = datetime.now(timezone.utc)
-    media_metadata[chatroom_id] = [entry for entry in media_metadata[chatroom_id] if entry["expiration_time"] > now]
+    media_metadata[chatroom_id] = [entry for entry in media_metadata[chatroom_id] if datetime.fromisoformat(entry["expiration_time"]) > now]
