@@ -3,11 +3,12 @@ import os
 from pydantic import BaseModel
 from typing import Optional, Literal, Any
 
-from pydantic_ai import Agent  # Framework: Pydantic AI
+# from pydantic_ai import Agent  # Framework: Pydantic AI
 from google import genai as new_genai
 from google.genai import types
-from mistralai import Mistral  # Vanilla: Mistral
-from groq import Groq  # Vanilla: Groq
+
+# from mistralai import Mistral  # Vanilla: Mistral
+# from groq import Groq  # Vanilla: Groq
 from dotenv import load_dotenv
 
 import configuration
@@ -53,21 +54,21 @@ class LLMModel:
         else:
             raise ValueError(f"Unsupported provider for Pydantic AI: {self.provider}")
 
-        self.client = Agent(f"{self.provider}:{self.model_name}", system_prompt=self.system_prompt)
+        # self.client = Agent(f"{self.provider}:{self.model_name}", system_prompt=self.system_prompt)
 
     def _initialize_vanilla_model(self):
         """
         Initialize the vanilla API client.
         """
-        if self.provider == "mistral":
-            self.model_name = configuration.MISTRAL_MODEL
-            self.client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
-        elif self.provider == "gemini":
+        if self.provider == "gemini":
             self.model_name = configuration.GEMINI_MODEL
             self.client = new_genai.Client(api_key=os.environ["GEMINI_API_KEY"])
-        elif self.provider == "groq":
-            self.model_name = configuration.GROQ_MODEL
-            self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+        # elif self.provider == "mistral":
+        #     self.model_name = configuration.MISTRAL_MODEL
+        #     self.client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
+        # elif self.provider == "groq":
+        #     self.model_name = configuration.GROQ_MODEL
+        #     self.client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
         else:
             raise ValueError(f"Unsupported provider for vanilla API: {self.provider}")
 
@@ -90,11 +91,12 @@ class LLMModel:
             raise ValueError(f"Unsupported framework: {self.framework}")
 
     def _generate_response_pydantic_ai(self, prompt: str, **kwargs):
-        result = None
-        response = self.client.run_sync(prompt, **kwargs)
-        self.responses.append(response)
-        result = response.data
-        return {"content": result}
+        # result = None
+        # response = self.client.run_sync(prompt, **kwargs)
+        # self.responses.append(response)
+        # result = response.data
+        # return {"content": result}
+        pass
 
     def _generate_response_vanilla(self, prompt: str, **kwargs):
         result = None
@@ -113,10 +115,10 @@ class LLMModel:
                 ),
             )
             result = response.text
-        elif self.provider in {"groq", "mistral"}:
-            response = self.client.chat.complete(
-                model=self.model_name, messages=[{"role": "system", "content": self.system_prompt}, {"role": "user", "content": prompt}], **kwargs
-            )
-            result = response.choices[0].message.content
+        # elif self.provider in {"groq", "mistral"}:
+        #     response = self.client.chat.complete(
+        #         model=self.model_name, messages=[{"role": "system", "content": self.system_prompt}, {"role": "user", "content": prompt}], **kwargs
+        #     )
+        #     result = response.choices[0].message.content
         self.responses.append(response)
         return {"content": result}
