@@ -33,7 +33,11 @@ def add_chat_history(chat_histories: dict, chatroom_id: str, message_id: str, me
 def get_chat_history(chat_histories: dict, chatroom_id: str) -> str:
     entries = chat_histories.get(chatroom_id, [])
     messages = []
+    print(f"Entries: {entries}")
+    print(f"Type Entries: {type(entries)}")
     for entry in entries:
+        print(f"Entry: {entry}")
+        print(f"Type Entry: {type(entry)}")
         messages.append(entry["message"])
     return "\n".join(messages)
 
