@@ -1,19 +1,13 @@
-import os
-import requests
-from dotenv import load_dotenv
 from collections import deque
+import requests
+from configuration import PANTRY_ID, MAX_MESSAGE
 
-import configuration
-
-load_dotenv()
-
-PANTRY_ID = os.environ.get("PANTRY_ID")
 BASE_URL = f"https://getpantry.cloud/apiv1/pantry/{PANTRY_ID}"
 headers = {"Content-Type": "application/json"}
 
 
 def create_basket(basket_name: str):
-    """Create a new basket in Pantry (implicitly)."""
+    """Create a new basket in Pantry."""
     data = {}
     response = requests.post(f"{BASE_URL}/basket/{basket_name}", headers=headers, json=data, timeout=10)
     response.raise_for_status()
@@ -38,7 +32,7 @@ def retrieve_data(basket_name: str) -> dict:
     response = requests.get(url=f"{BASE_URL}/basket/{basket_name}", headers=headers, timeout=10)
     if response.status_code == 200:
         data = response.json()
-        return {key: deque(value, maxlen=configuration.MAX_MESSAGE) if isinstance(value, list) else value for key, value in data.items()}
+        return {key: deque(value, maxlen=MAX_MESSAGE) if isinstance(value, list) else value for key, value in data.items()}
     elif response.status_code != 200:
         raise ValueError(f"The basket name '{basket_name}' has not been created so there is no data to be retrieved")
 

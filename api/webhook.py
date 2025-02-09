@@ -1,36 +1,33 @@
-import os
 import traceback
-import time
 import logging
 import fastapi
-
-from dotenv import load_dotenv
-
 from utils.line_related import LineBotHelper
 from utils import memory, database_pantry
-from services.llm_models.model import LLMModel
 from services.chatbot import chatbot
 
 # Set up logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-load_dotenv()
 
 app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()
-MODEL = LLMModel()
 
 try:
-    chat_histories = memory.load_chat_histories_from_pantry()
-except ValueError as e:
-    chat_histories = {}
+    chat_histories = memory.load_from_pantry(basket_name=memory.PANTRY_CHAT_HISTORY)
+except ValueError:
     database_pantry.create_basket(basket_name=memory.PANTRY_CHAT_HISTORY)
-
+    chat_histories = {}
 
 try:
-    model_responses = memory.load_model_responses_from_pantry()
-except ValueError as e:
-    model_responses = {}
+    model_responses = memory.load_from_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES)
+except ValueError:
     database_pantry.create_basket(basket_name=memory.PANTRY_MODEL_RESPONSES)
+    model_responses = {}
+
+try:
+    media_metadata = memory.load_from_pantry(basket_name=memory.PANTRY_MEDIA_METADATA)
+except ValueError:
+    database_pantry.create_basket(basket_name=memory.PANTRY_MEDIA_METADATA)
+    media_metadata = {}
 
 
 @app.post("/webhook")
@@ -46,13 +43,9 @@ async def webhook(request: fastapi.Request):
             raise fastapi.HTTPException(status_code=400, detail="Invalid signature. Please check your channel access token/channel secret.")
 
         events = r_body_json.get("events", [])
-
-        # processing text messages for now
-        msg_events = [event for event in events if event.get("message", {}).get("type", "") == "text"]
+        msg_events = [event for event in events if event.get("type", "") == "message"]
         try:
-            for event in msg_events:
-                LINEBOTHELPER.display_loading_animation(event)
-                chatbot.process_event(LINEBOTHELPER, MODEL, event, chat_histories, model_responses)
+            chatbot.handle_events(msg_events, chat_histories, model_responses, media_metadata)
         except Exception as e:
             print(f"Error processing message: {e}")
             traceback.print_exc()
@@ -62,6 +55,7 @@ async def webhook(request: fastapi.Request):
         print(f"Headers: {request.headers}")
         print(f"Chat History: {chat_histories}")
         print(f"Model Responses: {model_responses}")
+        print(f"Media Metadata: {media_metadata}")
         return fastapi.responses.JSONResponse(content={"message": "OK"})
     except Exception as e:
         print(f"Error processing webhook: {e}")
