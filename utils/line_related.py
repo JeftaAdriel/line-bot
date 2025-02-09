@@ -26,6 +26,12 @@ class LineBotHelper:
         gen_signature = hmac.new(self.channel_secret.encode("utf-8"), body.encode("utf-8"), hashlib.sha256).digest()
         return hmac.compare_digest(x_line_signature.encode("utf-8"), base64.b64encode(gen_signature))
 
+    def validate_message(self, data: dict) -> bool:
+        """Validate the message with LINE API before sending."""
+        destination_url = f"{LINE_API_BASE_URL}/message/validate/push"
+        response = requests.post(destination_url, headers=headers, json=data, timeout=10)
+        return response.status_code == 200  # Returns True if validation is successful
+
     # Informations
     def get_message_type(self, event: dict) -> str:
         return event["message"]["type"]
@@ -105,6 +111,14 @@ class LineBotHelper:
             "messages": [{"type": "text", "text": f"{response}"}],
         }
         response = requests.post(destination_url, headers=headers, json=data, timeout=10)
+        print(f"Response: {response.status_code}, {response.text}")
+        return response
+
+    def send_push_message(self, event: dict, messages: dict):
+        destination_url = f"{LINE_API_BASE_URL}/message/push"
+        to = {"to": self.get_user_id(event)} if self.get_message_source_type(event) == "user" else {"to": self.get_group_id(event)}
+        data = {**to, **messages}
+        response = requests.post(destination_url, headers=headers, timeout=10, json=data)
         print(f"Response: {response.status_code}, {response.text}")
         return response
 

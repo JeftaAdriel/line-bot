@@ -31,7 +31,7 @@ def add_chat_history(chat_histories: dict, chatroom_id: str, message_id: str, me
 
 
 def get_chat_history(chat_histories: dict, chatroom_id: str) -> str:
-    return "".join(f"{entry["message"]}\n" for entry in chat_histories.get(chatroom_id, []))
+    return "".join(f"{entry['message']}\n" for entry in chat_histories.get(chatroom_id, []))
 
 
 def clear_chat_history(chat_histories: dict, chatroom_id: str):

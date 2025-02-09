@@ -30,6 +30,13 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         else:
             raise ValueError("Source type is neither user nor group")
 
+        if args.content in configuration.template_keyword_responses:
+            message_data = {"messages": [configuration.template_keyword_responses[args.content]]}
+            if LINEBOTHELPER.validate_message(message_data):
+                response = LINEBOTHELPER.send_push_message(event, response)
+                print(f"Sent response: {response}")
+            return
+
         # Update memory
         if args.media_type == "text":
             message = f"{args.profile_name}: {args.content}"
