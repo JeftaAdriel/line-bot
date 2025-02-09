@@ -33,7 +33,7 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         if args.content in configuration.template_keyword_responses:
             message_data = {"messages": [configuration.template_keyword_responses[args.content]]}
             if LINEBOTHELPER.validate_message(message_data):
-                response = LINEBOTHELPER.send_push_message(event, response)
+                response = LINEBOTHELPER.send_push_message(event=event, messages=message_data)
                 print(f"Sent response: {response}")
             return
 
@@ -66,9 +66,10 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
             response = response_dict["content"]
 
             # Send reply and update histories
-            response = LINEBOTHELPER.send_reply_message(event, response)
-            print(f"Sent response: {response}")
-            message_ids = [message["id"] for message in response.get("sentMessages", [])]
+            reply_response = LINEBOTHELPER.send_reply_message(event, response)
+            print(f"Sent response: {reply_response}")
+            print(f"Bot Response: {response}")
+            message_ids = [message["id"] for message in reply_response.get("sentMessages", [])]
             for message_id in message_ids:
                 memory.add_chat_history(
                     chat_histories=chat_histories, chatroom_id=use_id, message_id=message_id, message=f"{configuration.BOT_CALL_NAME}: {response}"
