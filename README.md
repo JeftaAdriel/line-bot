@@ -2,6 +2,7 @@
 
 Introducing Aikomiawase Aiko!
 
+
 This project is a LINE chatbot designed to interact with users, provide meaningful responses, and manage chat history using Pantry Cloud as a lightweight backend. The bot can intelligently process group and personal messages and is configurable for specific triggers, such as responding to mentions of a specific keyword (e.g., "Aiko"). Now powered exclusively by Gemini 2.0 Flash, Aiko not only processes text but also accepts various media inputs while leveraging advanced internet search capabilities—all with a touch of humor through meme templates (including playful government satire).
 
 ---
