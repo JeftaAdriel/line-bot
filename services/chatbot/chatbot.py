@@ -1,12 +1,12 @@
-import traceback, os
-import google.generativeai as old_genai
+import traceback
+import os
+import google.genai
 import configuration
 from utils.line_related import LineBotHelper
 from utils import memory, chatbot_utils
 from services.llm_models.model import LLMModel, ModelArgs
 
-old_genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-client = old_genai.GenerativeModel(configuration.GEMINI_MODEL, system_instruction=configuration.SYSTEM_PROMPT)
+client = google.genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 model_args = ModelArgs(framework=configuration.FRAMEWORK, provider=configuration.PROVIDER, system_prompt=configuration.SYSTEM_PROMPT)
 
 LINEBOTHELPER = LineBotHelper()
@@ -38,6 +38,7 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         memory.add_chat_history(
             chat_histories=chat_histories,
             chatroom_id=use_id,
+            message_id=args.message_id,
             message=message,
         )
         memory.clear_expired_media_metadata(media_metadata=media_metadata, chatroom_id=use_id)
@@ -48,24 +49,23 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         if args.should_respond:
 
             if args.quoted_message_id is not None:
-                filename = LINEBOTHELPER.get_filename(media_metadata=media_metadata, quoted_message_id=args.quoted_message_id, chatroom_id=use_id)
-                if filename is not None:
-                    myfile = old_genai.get_file(filename)
-                    prompt = [myfile, args.content]
-                    result = client.generate_content(prompt)
-                    response_dict = {"content": result.text}
-                else:
-                    prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
-                    response_dict = MODEL.get_response(prompt)
+                quoted_content = memory.get_quoted_content(args.quoted_message_id, use_id, chat_histories, media_metadata)
+                prompt = ["Konten yang dikutip: ", "\n", quoted_content, "\n\n", "Histori Percakapan: ", "\n", args.content]
             else:
                 prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
-                response_dict = MODEL.get_response(prompt)
 
+            print(f"Prompt: {prompt}")
+            response_dict = MODEL.get_response(prompt)
             response = response_dict["content"]
 
             # Send reply and update histories
-            LINEBOTHELPER.send_reply_message(event, response)
-            memory.add_chat_history(chat_histories=chat_histories, chatroom_id=use_id, message=f"{configuration.BOT_CALL_NAME}: {response}")
+            response = LINEBOTHELPER.send_reply_message(event, response)
+            print(f"Sent response: {response}")
+            message_ids = [message["message_id"] for message in response.get("sentMessages", {})]
+            for message_id in message_ids:
+                memory.add_chat_history(
+                    chat_histories=chat_histories, chatroom_id=use_id, message_id=message_id, message=f"{configuration.BOT_CALL_NAME}: {response}"
+                )
             memory.add_model_responses(model_responses, use_id, response_dict)
 
         # Sync histories regardless of whether we responded

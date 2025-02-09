@@ -1,6 +1,5 @@
-import requests
 from collections import deque
-
+import requests
 from configuration import PANTRY_ID, MAX_MESSAGE
 
 BASE_URL = f"https://getpantry.cloud/apiv1/pantry/{PANTRY_ID}"

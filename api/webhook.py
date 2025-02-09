@@ -41,7 +41,6 @@ async def webhook(request: fastapi.Request):
 
         events = r_body_json.get("events", [])
         msg_events = [event for event in events if event.get("type", "") == "message"]
-        # msg_events = [event for event in events if event.get("message", {}).get("type", "") == "text"]
         try:
             chatbot.handle_events(msg_events, chat_histories, model_responses, media_metadata)
         except Exception as e:

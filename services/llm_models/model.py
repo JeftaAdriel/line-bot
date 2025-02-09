@@ -1,19 +1,17 @@
 import os
 
+from typing import Optional
+from typing import Literal
+from typing import Any
 from pydantic import BaseModel
-from typing import Optional, Literal, Any
 
 # from pydantic_ai import Agent  # Framework: Pydantic AI
-from google import genai as new_genai
-from google.genai import types
+import google.genai
 
 # from mistralai import Mistral  # Vanilla: Mistral
 # from groq import Groq  # Vanilla: Groq
-from dotenv import load_dotenv
 
 import configuration
-
-load_dotenv()
 
 
 class ModelArgs(BaseModel):
@@ -62,7 +60,7 @@ class LLMModel:
         """
         if self.provider == "gemini":
             self.model_name = configuration.GEMINI_MODEL
-            self.client = new_genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+            self.client = google.genai.Client(api_key=os.environ["GEMINI_API_KEY"])
         # elif self.provider == "mistral":
         #     self.model_name = configuration.MISTRAL_MODEL
         #     self.client = Mistral(api_key=os.environ.get("MISTRAL_API_KEY"))
@@ -105,11 +103,13 @@ class LLMModel:
             response = self.client.models.generate_content(
                 model=self.model_name,
                 contents=prompt,
-                config=types.GenerateContentConfig(
+                config=google.genai.types.GenerateContentConfig(
                     system_instruction=self.system_prompt,
                     tools=[
-                        types.Tool(
-                            google_search=types.GoogleSearchRetrieval(dynamic_retrieval_config=types.DynamicRetrievalConfig(dynamic_threshold=0.6))
+                        google.genai.types.Tool(
+                            google_search=google.genai.types.GoogleSearchRetrieval(
+                                dynamic_retrieval_config=google.genai.types.DynamicRetrievalConfig(dynamic_threshold=0.6)
+                            )
                         )
                     ],
                 ),

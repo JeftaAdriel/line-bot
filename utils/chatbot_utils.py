@@ -1,5 +1,7 @@
 import re
-from typing import Optional, Literal, Any
+from typing import Optional
+from typing import Literal
+from typing import Any
 from pydantic import BaseModel
 from utils.line_related import LineBotHelper
 
