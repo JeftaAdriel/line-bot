@@ -111,7 +111,6 @@ class LineBotHelper:
             "messages": [{"type": "text", "text": f"{response}"}],
         }
         response = requests.post(destination_url, headers=headers, json=data, timeout=10)
-        print(f"Response: {response.status_code}, {response.text}")
         return response
 
     def send_push_message(self, event: dict, messages: dict):
@@ -119,7 +118,6 @@ class LineBotHelper:
         to = {"to": self.get_user_id(event)} if self.get_message_source_type(event) == "user" else {"to": self.get_group_id(event)}
         data = {**to, **messages}
         response = requests.post(destination_url, headers=headers, timeout=10, json=data)
-        print(f"Response: {response.status_code}, {response.text}")
         return response
 
     def display_loading_animation(self, event: dict):

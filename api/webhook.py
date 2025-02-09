@@ -55,6 +55,7 @@ async def webhook(request: fastapi.Request):
         print(f"Headers: {request.headers}")
         print(f"Chat History: {chat_histories}")
         print(f"Model Responses: {model_responses}")
+        print(f"Media Metadata: {media_metadata}")
         return fastapi.responses.JSONResponse(content={"message": "OK"})
     except Exception as e:
         print(f"Error processing webhook: {e}")

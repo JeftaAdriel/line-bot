@@ -62,16 +62,12 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
             else:
                 prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
 
-            print(f"Prompt: {prompt}")
             response_dict = MODEL.get_response(prompt)
             response = response_dict["content"]
 
             # Send reply and update histories
             reply_response = LINEBOTHELPER.send_reply_message(event, response)
             reply_response_data = json.loads(reply_response.content.decode("utf-8"))
-            print(f"Reply response: {reply_response}")
-            print(f"Reply Response Content: {reply_response.content}")
-            print(f"Bot Response: {response}")
             message_ids = [message["id"] for message in reply_response_data.get("sentMessages", [])]
             for message_id in message_ids:
                 memory.add_chat_history(
