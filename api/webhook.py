@@ -2,7 +2,7 @@ import traceback
 import logging
 import fastapi
 from utils.line_related import LineBotHelper
-from utils import memory
+from utils import memory, database_pantry
 from services.chatbot import chatbot
 
 # Set up logging
@@ -14,16 +14,19 @@ LINEBOTHELPER = LineBotHelper()
 try:
     chat_histories = memory.load_from_pantry(basket_name=memory.PANTRY_CHAT_HISTORY)
 except ValueError:
+    database_pantry.create_basket(basket_name=memory.PANTRY_CHAT_HISTORY)
     chat_histories = {}
 
 try:
     model_responses = memory.load_from_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES)
 except ValueError:
+    database_pantry.create_basket(basket_name=memory.PANTRY_MODEL_RESPONSES)
     model_responses = {}
 
 try:
     media_metadata = memory.load_from_pantry(basket_name=memory.PANTRY_MEDIA_METADATA)
 except ValueError:
+    database_pantry.create_basket(basket_name=memory.PANTRY_MEDIA_METADATA)
     media_metadata = {}
 
 
