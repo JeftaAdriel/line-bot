@@ -61,7 +61,6 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
                 prompt = ["Konten yang dikutip: ", "\n", quoted_content, "\n\n", "Histori Percakapan: ", "\n", args.content]
             else:
                 prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
-
             response_dict = MODEL.get_response(prompt)
             response = response_dict["content"]
 
