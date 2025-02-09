@@ -69,7 +69,7 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
             reply_response = LINEBOTHELPER.send_reply_message(event, response)
             print(f"Sent response: {reply_response}")
             print(f"Bot Response: {response}")
-            message_ids = [message["id"] for message in reply_response.get("sentMessages", [])]
+            message_ids = [message["id"] for message in reply_response.content.get("sentMessages", [])]
             for message_id in message_ids:
                 memory.add_chat_history(
                     chat_histories=chat_histories, chatroom_id=use_id, message_id=message_id, message=f"{configuration.BOT_CALL_NAME}: {response}"
