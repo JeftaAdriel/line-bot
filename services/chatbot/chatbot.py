@@ -1,5 +1,6 @@
 import traceback
 import os
+import json
 import google.genai
 import configuration
 from utils.line_related import LineBotHelper
@@ -67,9 +68,11 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
 
             # Send reply and update histories
             reply_response = LINEBOTHELPER.send_reply_message(event, response)
-            print(f"Sent response: {reply_response}")
+            reply_response_data = json.loads(reply_response.content.decode("utf-8"))
+            print(f"Reply response: {reply_response}")
+            print(f"Reply Response Content: {reply_response.content}")
             print(f"Bot Response: {response}")
-            message_ids = [message["id"] for message in reply_response.content.get("sentMessages", [])]
+            message_ids = [message["id"] for message in reply_response_data.get("sentMessages", [])]
             for message_id in message_ids:
                 memory.add_chat_history(
                     chat_histories=chat_histories, chatroom_id=use_id, message_id=message_id, message=f"{configuration.BOT_CALL_NAME}: {response}"
