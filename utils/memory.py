@@ -95,7 +95,9 @@ def get_quoted_text(chat_histories: dict, quoted_message_id: str, chatroom_id: s
 
 
 def get_quoted_content(quoted_message_id: str, use_id: str, chat_histories: dict, media_metadata: dict) -> str:
-    quoted_content = get_quoted_filename(media_metadata=media_metadata, quoted_message_id=quoted_message_id, chatroom_id=use_id)
-    if quoted_content is None:
+    filename = get_quoted_filename(media_metadata=media_metadata, quoted_message_id=quoted_message_id, chatroom_id=use_id)
+    if filename is None:
         quoted_content = get_quoted_text(chat_histories=chat_histories, quoted_message_id=quoted_message_id, chatroom_id=use_id)
+    else:
+        quoted_content = client.files.get(name=filename)
     return quoted_content
