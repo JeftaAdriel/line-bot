@@ -29,17 +29,17 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         chatbot_utils.update_memory(args, chat_histories, media_metadata, use_id)
 
         if args.should_respond:
-            args.tool_name = client.models.generate_content(
+            tool_name = client.models.generate_content(
                 model="gemini-2.0-flash",
                 contents="Determine whether and which tool is needed",
                 config={"response_mime_type": "application/json", "response_schema": chatbot_utils.ToolsClassification},
             )
-            if args.tool_name:
+            if tool_name:
                 message_data = None
-                if args.tool_name == "waifu.it":  # Quote requests
+                if tool_name == "waifu.it":  # Quote requests
                     reply_response = chatbot_utils.get_quote_from_waifuit()
                     message_data = {"messages": [{"type": "text", "text": reply_response}]}
-                # elif args.tool_name == "trace.moe":  # Anime source search
+                # elif tool_name == "trace.moe":  # Anime source search
                 #     quoted_content = memory.get_quoted_content(args.quoted_message_id, use_id, chat_histories, media_metadata)
                 #     reply_response = chatbot_utils.get_anime_info_from_tracemoe(quoted_content)
                 LINEBOTHELPER.send_push_message(event=event, messages=message_data)

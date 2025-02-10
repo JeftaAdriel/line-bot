@@ -34,7 +34,6 @@ class MessageArgs(BaseModel):
     content: Any
     myfile: Any
     quoted_message_id: Optional[str]
-    tool_name: ToolsClassification
 
 
 def contains_aiko(message: str) -> bool:
@@ -117,8 +116,6 @@ def get_message_args(event: dict) -> MessageArgs:
     else:
         quoted_message_id = None
 
-    tool_name = None
-
     return MessageArgs(
         message_id=message_id,
         source=source,
@@ -131,7 +128,6 @@ def get_message_args(event: dict) -> MessageArgs:
         content=content,
         myfile=myfile,
         quoted_message_id=quoted_message_id,
-        tool_name=tool_name,
     )
 
 
