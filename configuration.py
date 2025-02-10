@@ -51,17 +51,17 @@ template_keyword_responses = {
         "originalContentUrl": "https://i0.wp.com/borobudurnews.com/wp-content/uploads/2021/09/Kocing.jpg",
         "previewImageUrl": "https://i0.wp.com/borobudurnews.com/wp-content/uploads/2021/09/Kocing.jpg",
     },
-    "fufufafa bikin malu negara": {
+    "bikin malu negara": {
         "type": "image",
         "originalContentUrl": "https://pbs.twimg.com/media/Ga0WlLMbQAA3PIR.jpg",
         "previewImageUrl": "https://pbs.twimg.com/media/Ga0WlLMbQAA3PIR.jpg",
     },
-    "fufufafa sebodoh itukah": {
+    "sebodoh itukah": {
         "type": "image",
         "originalContentUrl": "https://pbs.twimg.com/media/Ga6fDRQacAAtcTb.jpg",
         "previewImageUrl": "https://pbs.twimg.com/media/Ga6fDRQacAAtcTb.jpg",
     },
-    "fufufafa wkwkwk gblk": {
+    "wkwkwk gblk": {
         "type": "image",
         "originalContentUrl": "https://pbs.twimg.com/media/GbxCfgkbIAAG25u.jpg",
         "previewImageUrl": "https://pbs.twimg.com/media/GbxCfgkbIAAG25u.jpg",
@@ -75,5 +75,20 @@ template_keyword_responses = {
         "type": "image",
         "originalContentUrl": "https://i.pinimg.com/736x/41/d0/d3/41d0d340210f59aa55f65bf653b9dbb9.jpg",
         "previewImageUrl": "https://i.pinimg.com/736x/41/d0/d3/41d0d340210f59aa55f65bf653b9dbb9.jpg",
+    },
+    "kecewa berat": {
+        "type": "image",
+        "originalContentUrl": "https://media.tenor.com/TeFnlTynTlwAAAAe/kecewa-berat.jpg",
+        "previewImageUrl": "https://media.tenor.com/TeFnlTynTlwAAAAe/kecewa-berat.jpg",
+    },
+    "approved": {
+        "type": "image",
+        "originalContentUrl": "https://upload-os-bbs.hoyolab.com/upload/2025/01/11/395406388/2128e30e7c864143eca14404bdc0aabf_5893530860413280100.jpg",
+        "previewImageUrl": "https://upload-os-bbs.hoyolab.com/upload/2025/01/11/395406388/2128e30e7c864143eca14404bdc0aabf_5893530860413280100.jpg",
+    },
+    "alhamdulillah shonen": {
+        "type": "image",
+        "originalContentUrl": "https://pbs.twimg.com/media/E00P8a6WQAInQLq.jpg",
+        "previewImageUrl": "https://pbs.twimg.com/media/E00P8a6WQAInQLq.jpg",
     },
 }

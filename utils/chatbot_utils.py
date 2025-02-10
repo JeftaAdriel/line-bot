@@ -1,8 +1,11 @@
 import re
+import json
 from typing import Optional
 from typing import Literal
 from typing import Any
 from pydantic import BaseModel
+import configuration
+from utils import memory
 from utils.line_related import LineBotHelper
 
 line_bot_helper = LineBotHelper()
@@ -27,9 +30,61 @@ class MessageArgs(BaseModel):
 
 
 def contains_aiko(message: str) -> bool:
-    # Regex pattern to match variations of "Aiko" (case-insensitive, handles repeated letters)
+    """Regex pattern to match variations of "Aiko" (case-insensitive, handles repeated letters)"""
     pattern = r"\b[aA]+[iI]+[kK]+[oO]+\b"
     return bool(re.search(pattern, message))
+
+
+def get_use_id(args: MessageArgs) -> str:
+    if args.source == "user":
+        return args.user_id
+    elif args.source == "group":
+        return args.group_id
+    else:
+        raise ValueError("Source type is neither user nor group")
+
+
+def respond_to_template_keyword(args: MessageArgs, event: dict) -> bool:
+    if args.content in configuration.template_keyword_responses:
+        message_data = {"messages": [configuration.template_keyword_responses[args.content]]}
+        if line_bot_helper.validate_message(message_data):
+            line_bot_helper.send_push_message(event=event, messages=message_data)
+        return True
+    return False
+
+
+def update_memory(args: MessageArgs, event: dict, chat_histories: dict, media_metadata: dict, use_id: str):
+    message = f"{args.profile_name}: {args.content}" if args.media_type == "text" else f"{args.profile_name} {args.content}"
+    memory.add_chat_history(chat_histories=chat_histories, chatroom_id=use_id, message_id=args.message_id, message=message)
+    memory.clear_expired_media_metadata(media_metadata=media_metadata, chatroom_id=use_id)
+    if args.myfile:
+        memory.add_media_metadata(media_metadata, use_id, args.message_id, args.myfile)
+
+
+def generate_prompt(args: MessageArgs, chat_histories: dict, use_id: str, media_metadata: dict) -> list:
+    if args.quoted_message_id:
+        quoted_content = memory.get_quoted_content(args.quoted_message_id, use_id, chat_histories, media_metadata)
+        prompt = ["Konten yang dikutip: ", "\n", quoted_content, "\n\n", "Histori Percakapan: ", "\n", args.content]
+    else:
+        prompt = [memory.get_chat_history(chat_histories=chat_histories, chatroom_id=use_id)]
+    return prompt
+
+
+def update_histories(reply_response, chat_histories: dict, model_responses: dict, use_id: str, response_dict: dict, model_response: str):
+    reply_response_data = json.loads(reply_response.content.decode("utf-8"))
+    message_ids = [message["id"] for message in reply_response_data.get("sentMessages", [])]
+    for message_id in message_ids:
+        memory.add_chat_history(
+            chat_histories=chat_histories, chatroom_id=use_id, message_id=message_id, message=f"{configuration.BOT_CALL_NAME}: {model_response}"
+        )
+    memory.add_model_responses(model_responses, use_id, response_dict)
+
+
+def sync_memory(chat_histories: dict, model_responses: dict, media_metadata: dict, args: MessageArgs):
+    memory.sync_to_pantry(basket_name=memory.PANTRY_CHAT_HISTORY, data=chat_histories)
+    memory.sync_to_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES, data=model_responses)
+    if args.myfile:
+        memory.sync_to_pantry(basket_name=memory.PANTRY_MEDIA_METADATA, data=media_metadata)
 
 
 def get_message_args(event: dict) -> MessageArgs:
