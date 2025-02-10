@@ -29,11 +29,12 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         chatbot_utils.update_memory(args, chat_histories, media_metadata, use_id)
 
         if args.should_respond:
-            tool_name = client.models.generate_content(
-                model="gemini-2.0-flash",
-                contents="Determine whether and which tool is needed",
-                config={"response_mime_type": "application/json", "response_schema": chatbot_utils.ToolsClassification},
-            )
+            # tool_name = client.models.generate_content(
+            #     model="gemini-2.0-flash",
+            #     contents="Determine whether and which tool is needed",
+            #     config={"response_mime_type": "application/json", "response_schema": chatbot_utils.ToolsClassification},
+            # )
+            tool_name = None
             if tool_name:
                 message_data = None
                 if tool_name == "waifu.it":  # Quote requests
