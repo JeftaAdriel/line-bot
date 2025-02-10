@@ -16,6 +16,7 @@ LINE_CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET")
 ## Other Key
 VERCEL_TOKEN = os.environ.get("VERCEL_TOKEN")
 PANTRY_ID = os.environ.get("PANTRY_ID")
+WAIFUIT_TOKEN = os.environ.get("WAIFUIT_TOKEN")
 
 # Model instances
 BOT_FULL_NAME = "Aikomiawase Aiko"

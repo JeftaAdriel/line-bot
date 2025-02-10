@@ -3,9 +3,8 @@ import os
 import google.genai
 import configuration
 from utils.line_related import LineBotHelper
-from utils import chatbot_utils
-from services.llm_models.model import LLMModel
-from services.llm_models.model import ModelArgs
+from utils import chatbot_utils, memory
+from services.llm_models.model import LLMModel, ModelArgs
 
 client = google.genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 model_args = ModelArgs(framework=configuration.FRAMEWORK, provider=configuration.PROVIDER, system_prompt=configuration.SYSTEM_PROMPT)
@@ -27,9 +26,30 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
         if chatbot_utils.respond_to_template_keyword(args, event):
             return
 
-        chatbot_utils.update_memory(args, event, chat_histories, media_metadata, use_id)
+        chatbot_utils.update_memory(args, chat_histories, media_metadata, use_id)
 
         if args.should_respond:
+            args.tool_name = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents="Determine whether and which tool is needed",
+                config={"response_mime_type": "application/json", "response_schema": chatbot_utils.ToolsClassification},
+            )
+            if args.tool_name:
+                message_data = None
+                if args.tool_name == "waifu.it":  # Quote requests
+                    reply_response = chatbot_utils.get_quote_from_waifuit()
+                    message_data = {"messages": [{"type": "text", "text": reply_response}]}
+                # elif args.tool_name == "trace.moe":  # Anime source search
+                #     quoted_content = memory.get_quoted_content(args.quoted_message_id, use_id, chat_histories, media_metadata)
+                #     reply_response = chatbot_utils.get_anime_info_from_tracemoe(quoted_content)
+                LINEBOTHELPER.send_push_message(event=event, messages=message_data)
+                memory.add_chat_history(
+                    chat_histories=chat_histories,
+                    chatroom_id=use_id,
+                    message_id=args.message_id,
+                    message=f"{configuration.BOT_CALL_NAME}: {reply_response}",
+                )
+                return
             prompt = chatbot_utils.generate_prompt(args, chat_histories, use_id, media_metadata)
             response_dict = MODEL.get_response(prompt)
             model_response = response_dict["content"]

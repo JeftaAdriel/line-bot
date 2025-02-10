@@ -11,28 +11,33 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 app = fastapi.FastAPI()
 LINEBOTHELPER = LineBotHelper()
 
-try:
-    chat_histories = memory.load_from_pantry(basket_name=memory.PANTRY_CHAT_HISTORY)
-except ValueError:
-    database_pantry.create_basket(basket_name=memory.PANTRY_CHAT_HISTORY)
-    chat_histories = {}
 
-try:
-    model_responses = memory.load_from_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES)
-except ValueError:
-    database_pantry.create_basket(basket_name=memory.PANTRY_MODEL_RESPONSES)
-    model_responses = {}
+def get_histories():
+    try:
+        chat_histories = memory.load_from_pantry(basket_name=memory.PANTRY_CHAT_HISTORY)
+    except ValueError:
+        database_pantry.create_basket(basket_name=memory.PANTRY_CHAT_HISTORY)
+        chat_histories = {}
 
-try:
-    media_metadata = memory.load_from_pantry(basket_name=memory.PANTRY_MEDIA_METADATA)
-except ValueError:
-    database_pantry.create_basket(basket_name=memory.PANTRY_MEDIA_METADATA)
-    media_metadata = {}
+    try:
+        model_responses = memory.load_from_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES)
+    except ValueError:
+        database_pantry.create_basket(basket_name=memory.PANTRY_MODEL_RESPONSES)
+        model_responses = {}
+
+    try:
+        media_metadata = memory.load_from_pantry(basket_name=memory.PANTRY_MEDIA_METADATA)
+    except ValueError:
+        database_pantry.create_basket(basket_name=memory.PANTRY_MEDIA_METADATA)
+        media_metadata = {}
+
+    return chat_histories, model_responses, media_metadata
 
 
 @app.post("/webhook")
 async def webhook(request: fastapi.Request):
     try:
+        chat_histories, model_responses, media_metadata = get_histories()
         signature = request.headers.get("X-Line-Signature", "")
         r_body = await request.body()
         r_body_json = await request.json()
