@@ -17,7 +17,7 @@ class TaskClassification(BaseModel):
 
 
 class ToolsClassification(BaseModel):
-    tool_name: Literal["waifu.it", "trace.moe", None] = Field(
+    tool_name: Optional[Literal["waifu.it", "trace.moe", None]] = Field(
         description="The name of the tool to use for the user's request. 'waifu.it' for quote requests, 'trace.moe' for anime source search, None if no tool is needed."
     )
 
@@ -137,7 +137,7 @@ def get_message_args(event: dict) -> MessageArgs:
 
 def get_quote_from_waifuit() -> str:
     url = "https://waifu.it/api/v4/quote"
-    response = requests.get(url, headers={"Authorization": configuration.WAIFUIT_TOKEN})
+    response = requests.get(url, headers={"Authorization": configuration.WAIFUIT_TOKEN}, timeout=10)
     data = response.json()
     text = f"{data['quote']}\n\n- {data['author']} from {data['anime']}"
     return text
