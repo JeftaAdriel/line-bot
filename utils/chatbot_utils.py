@@ -11,11 +11,15 @@ from utils.line_related import LineBotHelper
 line_bot_helper = LineBotHelper()
 client = google.genai.Client(api_key=configuration.GEMINI_API_KEY)
 
+
 class TaskClassification(BaseModel):
     task_type: Literal["store_message", "respond_message", "tool_use"]
 
+
 class ToolsClassification(BaseModel):
-    tool_name: Literal["waifu.it", "trace.moe", None] = Field(description="The name of the tool to use for the user's request. 'waifu.it' for quote requests, 'trace.moe' for anime source search, None if no tool is needed.")
+    tool_name: Literal["waifu.it", "trace.moe", None] = Field(
+        description="The name of the tool to use for the user's request. 'waifu.it' for quote requests, 'trace.moe' for anime source search, None if no tool is needed."
+    )
 
 
 class MessageArgs(BaseModel):
@@ -112,7 +116,7 @@ def get_message_args(event: dict) -> MessageArgs:
         quoted_message_id = line_bot_helper.get_quoted_message_id(event)
     else:
         quoted_message_id = None
-    
+
     tool_name = None
 
     return MessageArgs(
@@ -127,8 +131,9 @@ def get_message_args(event: dict) -> MessageArgs:
         content=content,
         myfile=myfile,
         quoted_message_id=quoted_message_id,
-        tool_name=tool_name
+        tool_name=tool_name,
     )
+
 
 def get_quote_from_waifuit() -> str:
     url = "https://waifu.it/api/v4/quote"
@@ -137,7 +142,8 @@ def get_quote_from_waifuit() -> str:
     text = f"{data['quote']}\n\n- {data['author']} from {data['anime']}"
     return text
 
-def get_anime_info_from_tracemoe(image_file: google.genai.types.File):
+
+# def get_anime_info_from_tracemoe(image_file: google.genai.types.File):
 
 
 # TaskClassificationModel = LLMModel()
