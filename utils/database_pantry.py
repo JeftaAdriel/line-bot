@@ -21,6 +21,9 @@ def store_data(basket_name: str, data: dict):
     """Store data in Pantry under the given basket name."""
     payload = {key: list(value) if isinstance(value, deque) else value for key, value in data.items()}
     response = requests.put(url=f"{BASE_URL}/basket/{basket_name}", headers=headers, json=payload, timeout=10)
+    print(f"Store Response: {response}")
+    print(f"Response status code: {response.status_code}")
+    print(f"Response content: {response.content}")
     if response.status_code == 200:
         print(f"The data has successfully been stored at {basket_name}")
     elif response.status_code != 200:
