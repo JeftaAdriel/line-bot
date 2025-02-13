@@ -92,4 +92,14 @@ template_keyword_responses = {
         "originalContentUrl": "https://pbs.twimg.com/media/E00P8a6WQAInQLq.jpg",
         "previewImageUrl": "https://pbs.twimg.com/media/E00P8a6WQAInQLq.jpg",
     },
+    "absolute cinema": {
+        "type": "image",
+        "originalContentUrl": "https://pbs.twimg.com/media/GW7EbaibQAA1JVX.jpg",
+        "previewImageUrl": "https://pbs.twimg.com/media/GW7EbaibQAA1JVX.jpg",
+    },
+    "kenapa aku wni": {
+        "type": "image",
+        "originalContentUrl": "https://pbs.twimg.com/media/Gjfyq9RaAAA3LXV.jpg",
+        "previewImageUrl": "https://pbs.twimg.com/media/Gjfyq9RaAAA3LXV.jpg",
+    },
 }
