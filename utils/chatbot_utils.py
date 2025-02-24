@@ -78,19 +78,17 @@ def generate_prompt(args: MessageArgs, chat_histories: dict, use_id: str, media_
     return prompt
 
 
-def update_histories(reply_response, chat_histories: dict, model_responses: dict, use_id: str, response_dict: dict, model_response: str):
+def update_histories(reply_response, chat_histories: dict, use_id: str, model_response: str):
     reply_response_data = json.loads(reply_response.content.decode("utf-8"))
     message_ids = [message["id"] for message in reply_response_data.get("sentMessages", [])]
     for message_id in message_ids:
         memory.add_chat_history(
             chat_histories=chat_histories, chatroom_id=use_id, message_id=message_id, message=f"{configuration.BOT_CALL_NAME}: {model_response}"
         )
-    memory.add_model_responses(model_responses, use_id, response_dict)
 
 
-def sync_memory(chat_histories: dict, model_responses: dict, media_metadata: dict, args: MessageArgs):
+def sync_memory(chat_histories: dict, media_metadata: dict, args: MessageArgs):
     memory.sync_to_pantry(basket_name=memory.PANTRY_CHAT_HISTORY, data=chat_histories)
-    memory.sync_to_pantry(basket_name=memory.PANTRY_MODEL_RESPONSES, data=model_responses)
     if args.myfile:
         memory.sync_to_pantry(basket_name=memory.PANTRY_MEDIA_METADATA, data=media_metadata)
 

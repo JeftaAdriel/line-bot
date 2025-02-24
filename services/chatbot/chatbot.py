@@ -55,9 +55,9 @@ def process_event(args: chatbot_utils.MessageArgs, event: dict, chat_histories: 
             response_dict = MODEL.get_response(prompt)
             model_response = response_dict["content"]
             reply_response = LINEBOTHELPER.send_reply_message(event, model_response)
-            chatbot_utils.update_histories(reply_response, chat_histories, model_responses, use_id, response_dict, model_response)
+            chatbot_utils.update_histories(reply_response, chat_histories, use_id, model_response)
 
-        chatbot_utils.sync_memory(chat_histories, model_responses, media_metadata, args)
+        chatbot_utils.sync_memory(chat_histories, media_metadata, args)
 
     except Exception as e:
         print("Error processing event:", e)

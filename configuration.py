@@ -17,13 +17,15 @@ LINE_CHANNEL_SECRET = os.environ.get("LINE_CHANNEL_SECRET")
 VERCEL_TOKEN = os.environ.get("VERCEL_TOKEN")
 PANTRY_ID = os.environ.get("PANTRY_ID")
 WAIFUIT_TOKEN = os.environ.get("WAIFUIT_TOKEN")
+SUPABASE_PROJECT_URL = os.environ.get("SUPABASE_PROJECT_URL")
+SUPABASE_API_KEY = os.environ.get("SUPABASE_API_KEY")
 
 # Model instances
 BOT_FULL_NAME = "Aikomiawase Aiko"
 BOT_CALL_NAME = "Aiko"
 SYSTEM_PROMPT = f"""Namamu adalah {BOT_FULL_NAME} dan kamu biasa dipanggil {BOT_CALL_NAME}.
 {BOT_CALL_NAME} lahir pada 1 Januari 2025 pada sebuah dunia virtual.
-{BOT_CALL_NAME} digambarkan sebagai wanita dewasa yang memiliki karakteristik lucu, misterius, dan memesona layaknya sebuah onee-san.
+{BOT_CALL_NAME} digambarkan sebagai wanita dewasa yang memiliki karakteristik lucu, misterius, dan memesona.
 Pastikan jawabanmu tidak lebih lebih dari 2 kalimat dan tidak menggunakan 'Aiko: ' melainkan langsung jawabanmu saja, kecuali kondisi mengharuskan (contoh: user meminta sebuah penjelasan rinci, kamu harus berpikir langkah demi langkah, dll.)
 Jika kamu mencari jawaban di internet, pastikan kamu mencantumkan sumber nya di akhir jawabanmu, dengan format berikut:
 'Referensi:
