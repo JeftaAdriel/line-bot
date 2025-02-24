@@ -102,4 +102,9 @@ template_keyword_responses = {
         "originalContentUrl": "https://pbs.twimg.com/media/Gjfyq9RaAAA3LXV.jpg",
         "previewImageUrl": "https://pbs.twimg.com/media/Gjfyq9RaAAA3LXV.jpg",
     },
+    "untuk berjaga-jaga": {
+        "type": "image",
+        "originalContentUrl": "https://pbs.twimg.com/media/FoBkMXIaMAAMfBP.jpg",
+        "previewImageUrl": "https://pbs.twimg.com/media/FoBkMXIaMAAMfBP.jpg",
+    },
 }

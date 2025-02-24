@@ -52,7 +52,8 @@ def get_use_id(args: MessageArgs) -> str:
 
 
 def respond_to_template_keyword(args: MessageArgs, event: dict) -> bool:
-    if args.content in configuration.template_keyword_responses:
+    msg = args.content.strip().lower()
+    if msg in configuration.template_keyword_responses:
         message_data = {"messages": [configuration.template_keyword_responses[args.content]]}
         if line_bot_helper.validate_message(message_data):
             line_bot_helper.send_push_message(event=event, messages=message_data)
